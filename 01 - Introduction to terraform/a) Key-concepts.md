@@ -4,7 +4,7 @@
 
 ## a) **Infrastructure as a Code**
   - Managing and provisioning of infrastructure through code instead of manually
-  - Files that contain configurations are created and makes it easy to edit and distribute
+  - Files that contain configurations are created and makes it easy to edit and distribute/share
   - Ensures that the same environment is provisioned everytime.
   - Helps avoid undocumented, ad-hoc configuration changes
   - Easy to version control
@@ -18,16 +18,20 @@
   - Improve infrastructure consistency
   - Eliminate configuration drift
 
-## **What is Terraform?**
-  - IaaC tool from Hashicorp
+## **What is Terraform?**        
+  - IaaC tool from Hashicorp     https://www.hashicorp.com/
   - Used for building, changing and managing infrastructure in a safe, repeatable way
   - Uses HCL - Hashicorp Configuration Language - human readable
   - Reads configuration files and provides an execution plan which can be reviewed before being applied.
-  - It is platform agnostic - can manage a heterogeneous environment - multi cloud
+  - It is platform agnostic - can manage a heterogeneous environment - multi cloud. u can use it
+    on multiple clouds or e't or providers  - aws,dk, k8s, azure etc that's why terraf. thrives. 
   - State management - creates a state file when a project is first initialized. Uses this state file to  create plans and make changes based on the desired and current state of the infrastructure.
+   when u have ur configuration file, terra will use to to create a state file w it uses to
+   mge ur configuration.
   - Creates operator confidence
 
   ## **Terraform Configuration Files**
+ ( terra vs ansible:terra is declarative ie it does not matter where d files are located/dir as long as u have given it a path, it willread thro all d files, and will come out with a plan. ansible wks from d top to bottom so it is proceedural-follws a certain order or proceedure)
 - Terraform uses declarative syntax to describe your Infrastructure as Code (IaC) infrastructure
 and then persist it in configuration files that can be shared, reviewed, edited, versioned,
 preserved, and reused.
