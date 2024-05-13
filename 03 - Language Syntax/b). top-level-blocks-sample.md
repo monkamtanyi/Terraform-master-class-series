@@ -2,6 +2,7 @@
 
 ## Block-1: **Terraform Settings Block**
 ```
+#optional, if u don't provide, then it result to default, where version is latest.
 terraform {
   required_version = "~> 1.0" #1.1.4/5/6/7   1.2/3/4/5 1.1.4/5/6/7
   required_providers {
@@ -18,7 +19,7 @@ terraform {
 ```
 provider "aws" {
   profile = "default" # AWS Credentials Profile configured on your local desktop terminal  $HOME/.aws/credentials
-  region  = "us-west-2"
+  region  = "us-west-2" #optional. will provision in d default region were u are wking
 }
 ```
 
