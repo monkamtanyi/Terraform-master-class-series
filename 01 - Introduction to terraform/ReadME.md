@@ -3,7 +3,8 @@
 ## A) Prerequisites
 - Install Terraform CLI
 - Install AWS CLI
-- Install VS Code Editor - recommended for this course
+- Install VS Code Editor - recommended for this course or any other IDE(integrated development
+ e't) for writing your code
 - Install HashiCorp Terraform plugin for VS Code - recommended
 
 
