@@ -77,6 +77,20 @@ AWS Secret Access Key [None]: WL9G9Tl8lGm7w9t7B3NEDny1+w3N/K5F3HWtdFH/
 Default region name [None]: us-west-2
 Default output format [None]: json
 
+
+monka@DESKTOP-0PEDM4P MINGW64 ~ (master)
+$ cd .aws
+
+monka@DESKTOP-0PEDM4P MINGW64 ~/.aws (master)
+$ ls
+config  credentials
+
+monka@DESKTOP-0PEDM4P MINGW64 ~/.aws (master)
+$ cat credentials
+[default]
+
+
+
 # Verify if we are able list S3 buckets
 aws s3 ls
 ```
