@@ -4,9 +4,9 @@
 - You must have an AWS Account.
     - [Create an AWS Account](https://portal.aws.amazon.com/billing/signup?nc2=h_ct&src=header_signup&redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start)
 
-- If your terraform server is in the cloud, then create a role and attach the role to your server.
+- If your terraform server is in the cloud (meaning u created an ec2 instance like redhat or ubuntu etc, then create a role and attach the role to your server.
 
-- Generate Security Credentials using AWS Management Console
+- Generate Security Credentials using AWS Management Console (in ur local e't)
     - Go to Services -> IAM -> Users -> "Your-Admin-User" -> Security Credentials -> Create Access Key
 - Configure AWS credentials using SSH Terminal on your local desktop
 
