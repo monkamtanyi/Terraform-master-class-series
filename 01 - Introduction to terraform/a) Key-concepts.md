@@ -18,8 +18,8 @@
   - Improve infrastructure consistency
   - Eliminate configuration drift
 
-## **What is Terraform?**        
-  - IaaC tool from Hashicorp     https://www.hashicorp.com/
+## **What is Terraform?**  vendor of terraform is hashicorp  (vendor of cloud infrastructure automation)    
+  - IaaC tool from Hashicorp     https://www.hashicorp.com/  https://www.terraform.io/
   - Used for building, changing and managing infrastructure in a safe, repeatable way
   - Uses HCL - Hashicorp Configuration Language - human readable
   - Reads configuration files and provides an execution plan which can be reviewed before being applied.
