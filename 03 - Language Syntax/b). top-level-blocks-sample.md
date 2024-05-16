@@ -3,17 +3,19 @@
 ## Block-1: **Terraform Settings Block**
 ```
 #optional, if u don't provide, then it result to default, where version is latest.
-terraform {
+terraform {     #1.0.0 major, minor and patched version. only d most right value can vary.
   required_version = "~> 1.0" #1.1.4/5/6/7   1.2/3/4/5 1.1.4/5/6/7
-  required_providers {
-    aws = {
+  required_providers {          #in most cases we constraint d version to d major value
+    aws = {                          #ie 1.0
       source  = "hashicorp/aws"
       version = "~> 3.0"
     }
   }
 }
-```
-
+```u
+if i need to pass a specific version of terra, then i will need to  pass my terra settings block.
+if u go to aws as a provider (ie reg), u will see d source and latest version., 
+Providers hashicorp aws Latest Version
 
 ## Block-2: **Provider Block**
 ```
