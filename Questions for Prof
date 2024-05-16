@@ -1,0 +1,2 @@
+my terraform is not behaving as expected on d vs code.
+when i do terra init it does not create a terraform block as expected.
