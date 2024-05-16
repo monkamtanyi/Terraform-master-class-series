@@ -1,4 +1,4 @@
-my terraform is not behaving as expected on d vs code.
-when i do terra init it does not create a terraform block as expected.
-Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+my terraform is not behaving as expected on d vs code. DONE
+when i do terra init it does not create a terraform block as expected. DONE
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed. DONE
 I was unable to cd into .aws to see d various credentials as u demonstrated.
