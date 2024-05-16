@@ -60,13 +60,30 @@ eg ami-04d29b6f966df1537 above is an expression.
 
 
 ## Attributes
-- They represent a named piece of data that belongs to some kind of object. The value of an attribute can be referenced in expressions using a dot-separated notation, like aws_instance.example.id. when i create an instance, what i am passing in is called aguement, eg i am passing in an ami, ami is an aguement. after d instance is created
+- They represent a named piece of data that belongs to some kind of object. The value of an attribute can be referenced in expressions using a dot-separated notation, like aws_instance.example.id.
+-  when i create an instance, what i am passing in is called aguement, eg i am passing in an ami, ami is an aguement. after d instance is created
  we can get its id, private ip etc. an id or private ip is an attribute.
 - aguements are what we pass onto a resource, while attributes is what we get out of d resource after it has been created.
   
 - The format looks like `resource_type.resource_name.attribute_name`
-resource_type=aws_instance, resource_name=ec2demo, attribute_name=
-  
+- 
+resource_type=aws_instance, resource_name=ec2demo, attribute_name=public_ip
+got attribute_name from d attribute reference in aws_instance resource found in terra registry.
+it becomes
+
+aws_instance.ec2demo.public_ip
+to get instance id as output- i check id in d reg as above. 
+aws_instance.ec2demo.id
+
+so if u need d pu ip of an instance, create an output block
+
+output "instance_private_ip" {               
+  value = aws_instance.ec2demo.private_ip
+}
+give it a label eg instance_private_ip
+
+
+
 
 ## Identifiers
 - Argument names, block type names, and the names of most Terraform-specific constructs like resources, input variables, etc. are all identifiers.
