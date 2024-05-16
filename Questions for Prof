@@ -2,3 +2,5 @@ my terraform is not behaving as expected on d vs code. DONE
 when i do terra init it does not create a terraform block as expected. DONE
 Apply complete! Resources: 0 added, 0 changed, 0 destroyed. DONE
 I was unable to cd into .aws to see d various credentials as u demonstrated.
+when u do terraform --version, can u explain what appears. also when u go to
+aws as a provider can u also explain that similar info there.
