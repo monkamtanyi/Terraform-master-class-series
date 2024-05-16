@@ -23,17 +23,38 @@ provider "aws" {
   profile = "default" # AWS Credentials Profile configured on your local desktop terminal  $HOME/.aws/credentials
   region  = "us-west-2" #optional. will provision in d default region were u are wking
 }
+when u do aws configure, it sets a d default region. if u don't pass a specific region, above
+it sets d default region as ur wking region. if u don't pass any credential it uses 
+your default credential w is passed during aws configure.
+thus a code like this 
+provider "aws" {}  means i am using my default credentials and region.
 ```
 
-## Block-3: **Resource Block**
+## Block-3: **Resource Block**   creates ur resource. 2 labels req (these are d labels
+captured in d statefile) ie resource_typ, eresource_name. then d aguements.
 ```
 resource "aws_instance" "inst1" {
   ami           = "ami-0e5b6b6a9f3db6db8" # Amazon Linux
   instance_type = var.instance_type
 }
+
+if asked to provision a vpc, goto reg, search aws_vpc left corner
+if u want to create vpc, check in d resource section. but if have already created and y want 
+to get maybe d value check in d data source section.
+
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"    #one agument req plus d resource type and name
+}
+if u want to add agument scroll down to d aguement section. most are optional.
+
 ```
 
 ## Block-4: **Input Variables Block**
+this gives us an input, use a variable block to pass values into ur resources
+variable blk expects 1 label= name of d var. give it any name that is unique to terra.
+but d naming convention shld be able to guide another colleague to understand what
+u are doing. eg if i am passing a var for an instance, i can name it instance_type
+this var block req a type= ie string, number, boolean etc.
 ```
 variable "instance_type" {
   default     = "t2.micro"
@@ -42,11 +63,15 @@ variable "instance_type" {
 }
 ```
 
-## Block-5: **Output Values Block**
-```
+## Block-5: **Output Values Block**  use output to get values or attributes out of our resources
+```expect 1 label = name of d output.
+then d value you are referencing. eg if i want to get d ip address
+
 output "ec2_instance_publicip" {
   description = "EC2 Instance Public IP"
-  value       = aws_instance.inst1.public_ip
+  value       = aws_instance.inst1.public_ip  #access this attribute as already explain
+                           #attribute
+                            #ie value = resource_type>resource_name.attribute_name
 }
 ```
 
@@ -60,7 +85,7 @@ locals {
 bucket_name = local.name
 ```
 
-## Block-7: **Data sources Block**
+## Block-7: **Data sources Block**    if we want to get info from aws 
  - This example is used to get the latest AMI ID for Amazon Linux2 OS
 ```
 data "aws_ami" "amzLinux" {
