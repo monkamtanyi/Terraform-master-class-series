@@ -89,3 +89,212 @@ variable "my_instance_name" {
 file etc in d wking dir - in this case settings.
 
 Next is making d var. reqd.
+1) make region to be reqd. don't supply d default value. for now comment it out - go to var file and
+comment #default = "us-east-2", it means my region will be supplied by d user.
+similarly if i want my instant type reqd, then comment #default = "t2_micro" in d var file.
+
+LIST 
+if i have many instance then type bcomes a list of strings  ie
+
+variable "my_instance_type"
+  type = list(string)
+  default = ["t2.micro", "t2.medium", "t3.micro"] 
+
+I have this instance as a list.
+so if i want to provision t2.medium, what will be my index, i have to reference it in d rsource file as
+follows
+esource "aws_instance" "test_ec2" {
+  ami           = var.my_ami
+  instance_type = var.my_instance_type[1]    #index1 = index position 1 - provision t2-medium instance
+  user_data     = file("${path.module}/httpd.sh")
+
+  tags = {
+    Name = var.my_instance_name
+  }
+
+when u run d code, it will create a t2-medium, it will pick it from d list of strings of d instances 
+types.
+d resource file and variable file will look like this
+00000
+#EC2Binstance configurations
+resource "aws_instance" "test_ec2" {
+  ami           = var.my_ami
+  instance_type = var.my_instance_type[1]
+  user_data     = file("${path.module}/httpd.sh")
+
+  tags = {
+    Name = var.my_instance_name
+
+0000
+
+variable "us_region" {
+  type    = string
+  default = "us-east-2"
+}
+/*
+variable "my_instance_type" {
+  type    = string
+  default = "t2-micro"
+}
+*/
+
+ariable "my_instance_type" {
+  type    = list(string)
+  default = ["t2-micro", "t2-medium", "t3-micro"]
+}
+
+variable "my_ami" {
+  type    = string
+  default = "ami-02bf8ce06a8ed6092"
+}
+
+variable "my_instance_name" {
+  type    = string
+  default = "Demo-ec2"
+}
+0000
+
+
+NEXT PASS INTANCE AS A MAP
+type will be a map
+Default in map sld be in curly braces bcos map are key value pairs
+lets say we have diff e't:
+dev we want to provision t2-micro
+staging t2-medium
+prod t2-large
+
+how do we reference our resources
+in my resource file i will pass d key, not d index.
+dev, staging, prod is  d key. this is how d resource and var file look like
+below i want to creat a t2.micro instance type in my dev e't. same applies to others.
+
+0000
+#EC2Binstance configurations
+resource "aws_instance" "test_ec2" {
+  ami           = var.my_ami
+  instance_type = var.my_instance_type["dev"]
+  user_data     = file("${path.module}/httpd.sh")
+
+  tags = {
+    Name = var.my_instance_name
+  }
+}
+#EIP configurations
+resource "aws_eip" "my_eip" {
+  instance = aws_instance.test_ec2.id
+}
+
+
+
+0000
+variable "us_region" {
+  type    = string
+  default = "us-east-2"
+}
+/*
+variable "my_instance_type" {
+  type    = string
+  default = "t2.micro"
+}
+
+ariable "my_instance_type" {
+  type    = list(string)
+  default = ["t2.micro", "t2.medium", "t3.micro"]
+}
+*/
+variable "my_instance_type" {
+  type = map(any)
+  default = {
+    dev     = "t2.micro"
+    staging = "t2.medium"
+    prod    = "t3.micro"
+  }
+}
+
+variable "my_ami" {
+  type    = string
+  default = "ami-02bf8ce06a8ed6092"
+}
+
+variable "my_instance_name" {
+  type    = string
+  default = "Demo-ec2"
+}
+
+we have seen how we can use variables
+to make our code reusable
+by passing them as a string
+by mking them reqd
+by supplying default values
+for maps
+for list of strings
+and how we can call those var. in our e't.
+
+Tags can be passed as list or maps, then we can use same configuration to call them.
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+NEXT LOOK AT DATA SOURCES TO SEE FOR EXAMPLE HOW D DATA SOURCE CAN DYNAMICALLY GET D AMI ID 
+FOR US INSTEAD OF GOING TO MANUALLY COPY IT AS U LAUNCH AN INSTANCE IN AWS.
+
+1) how can we pass these var. as files: tfvars or auto-tfvars file
+For all files which match terraform.tfvars or *.auto.tfvars present in the current directory, 
+Terraform automatically loads them to populate variables.
+read
+05 - Variables and Data Sources/a) Variables/b). variable-files.md.
+(if u want ur file to be automatically loaded by terra, pass it like this
+terraform.tfvars or *.auto.tfvars 
+if u want to run it on a command line u give it anyname but must end with: -var-file flag.
+lets create terraform.tfvars in our dir. d variables that we have def earlier will be 
+passed as a file in  terraform.tfvars - lets go practical
+
+dev.ftvars file
+us_region        = "us-east-1"
+my_instance_name = "dev-ec2"
+#i want d name of instance type to be dev-ec2.
+# i can create a another file for my prod eviroment prod.tfvars.
+
+prod.tfvars file
+us_region = "us-east-1"
+my_instance_name = "prod-ec2"
+
+#suppose we saved this in a non terraform file prod.ftvar.md
+us_region = "us-east-1"
+
+my_instance_name = "prod-ec2"
+
+
+#since this is not a .tfvars file, i will have to run it with -var-file=prod.tfvars.
+#eg terraform plan -var-file=prod.tfvars means i want to run a plan based on my prod variables.a
+#terraform is going to read from my variable file in prod (prod.tfvars), and it will populate my prod with d file i 
+#i supplied - prod.tfvars
+#this is how u can pass variable file on a command line.
+#so we are using d same code or file to provision in diff e't. thus using the same file i can deploy to 
+#multiple e't- here i am using d var file. either we give default or make var required.
+#this concept is called dry = don't repeat urself.
+#(we use var files, we write d same code, we make sure that anything we can pass as a var. we use var files so
+#as not to repeat ourselves. all we are changing is just values in our var file like in dev.tfvars.
+
+XXXXXXXXXXXXXXXXXXXXXXX
+DATA SOURCES
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
