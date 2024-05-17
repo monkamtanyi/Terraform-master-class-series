@@ -8,7 +8,7 @@
 
 ## Step-02: In versions.tf - Create Terraform Settings Block
 - Understand about [Terraform Settings Block](https://www.terraform.io/docs/language/settings/index.html) and create it
-```t
+```
 terraform {
   required_version = "~> 1.0" # which means any version equal & above 1.0 like 1.1, 1.2 etc and < 2.xx
   required_providers {
