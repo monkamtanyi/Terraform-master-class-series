@@ -17,4 +17,11 @@ aftr creating ec2 instance, see d elastic ip, it has been assigned as d puIp
 this ip will not change even if i shut down my resource bcos it is elastic.
 
 Access apllication =step7 in terraform master class seried 04-settings
+# Access index.html
+http://<PUBLIC-IP>/index.html   http://3.14.224.113/index.html
+http://<PUBLIC-IP>/app1/index.html    http://3.14.224.113/app1/index.html
 
+# Access metadata.html             3.14.224.113/html
+http://<PUBLIC-IP>/app1/metadata.html          http://3.14.224.113/app1/metadata.html 
+
+open port80
