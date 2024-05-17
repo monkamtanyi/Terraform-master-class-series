@@ -10,3 +10,5 @@ next prof cat d credentials and saw multiple credentials
 
 when u do terraform --version, can u explain what appears. also when u go to
 aws as a provider can u also explain that similar info there.
+
+when i do terraform fmt, i don't see d effect.
