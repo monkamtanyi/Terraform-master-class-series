@@ -1,0 +1,91 @@
+
+create an ec2 instance and attach an elastic ip to it.
+
+terraform {
+  required_version = "~> 1.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-2"
+}
+
+resource "aws_instance" "test_ec2" {
+  ami           = "ami-02bf8ce06a8ed6092"
+  instance_type = "t2.micro"
+  user_data     = file("${path.module}/httpd.sh")
+
+  tags = {
+    Name = "Demo-ec2"
+  }
+}
+
+resource "aws_eip" "my_eip" {
+  instance = aws_instance.test_ec2.id
+}
+
+variable "boolean" {        #if y don't pass a default, it prompt user for an input on d cli.
+  type = bool
+  #default = true
+}
+
+
+The code will be be refactory -REFACTORING UR FILE ie creates files for varibles, output, etc seperately.
+
+terraform {
+  required_version = "~> 1.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.us_region
+}
+
+resource "aws_instance" "test_ec2" {
+  ami           = var.my_ami
+  instance_type = var.my_instance_type
+  user_data     = file("${path.module}/httpd.sh")
+
+  tags = {
+    Name = var.my_instance_name
+  }
+}
+
+resource "aws_eip" "my_eip" {
+  instance = aws_instance.test_ec2.id
+}
+#u can use any variable name as under.
+#using variablesus
+variable "us_region" {
+  type    = string
+  default = "us-east-2"
+}
+variable "my_instance_type" {
+  type    = string
+  default = "t2-micro"
+}
+variable "my_ami" {
+  type    = string
+  default = "ami-02bf8ce06a8ed6092"
+}
+
+variable "my_instance_name" {
+  type    = string
+  default = "Demo-ec2"
+}
+
+# using variables means i am not hard coding info.
+#for good organization it is good to refactory the code ie u can create variables files. provider
+file etc in d wking dir - in this case settings.
+
+Next is making d var. reqd.
