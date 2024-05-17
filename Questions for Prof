@@ -12,3 +12,9 @@ when u do terraform --version, can u explain what appears. also when u go to
 aws as a provider can u also explain that similar info there.
 
 when i do terraform fmt, i don't see d effect.
+
+aftr creating ec2 instance, see d elastic ip, it has been assigned as d puIp
+this ip will not change even if i shut down my resource bcos it is elastic.
+
+Access apllication =step7 in terraform master class seried 04-settings
+
