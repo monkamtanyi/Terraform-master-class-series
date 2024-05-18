@@ -179,6 +179,146 @@ data "aws_ami" "ubuntu_ami" {
   }
 }
 
+Suppose u want to create 5 resources, in dev, staging, uat etc, if u want to achieve this 
+u must create variables.
+how can i read this var and return a no. bcos count is a no.
+we use a fn called length - it will read d list and return d no. so d default can have many elements
+in d list.
+i want to find d length of this var called demo.count
+for d Name i will call d var ie var.demo_count[count.index]. this var will read d value 
+in my list and assign it an index eg dev=index0
+So make this changes only in resource.tf above (see under) and run d codes above
+
+resource.tf
+
+resource "aws_instance" "test_ec2" {
+  count         = length(var.demo_count)
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["dev"]
+
+  tags = {
+    Name = var.demo_count[count.index]
+  }
+}
+
+variable "demo_count" {
+  type    = list(string)
+  default = ["dev", "stage", "uat", "prod"]
+}
+
+terraform plan u see the instance on index3 is called prod, that on index 2 is called uat
+that on index1 is called stage, and that on index0 is called dev.
+so i have used d lenth fn to find d lenth of my var.
+ What id ur boss says add hr and finance to d list
+i will just add them to my varibles demo_count (under), i don;t need to change my code bcos
+d length fn will automatically read this addition.
+
+variable "demo_count" {
+  type    = list(string)
+  default = ["dev", "stage", "uat", "prod", "hr", finance"]
+}
+so above 5 instances will be created.
+
+Suppose we have ust our 1st 4 instance.
+assume u have created d 4 resources, and d production guys have deployed resources to prod,
+d uat people have deployed to uat, staging has deployed resources, and dev has also deployed
+resources.
+
+Now suppose d boss says he does't need stage. what do u do
+simply take out stage from ur code. default = ["dev", "uat", "prod"]
+terraform plan- notices that uat is moved to stage position, prod is moved to index2.in plan u see 
+plan = 2 add 1 destroy - we were expecting only to see 1 destroy.
+
+actually this is not what u want, bcos people of prod deployed in prod and those in uat deployed 
+to uat and not stage.
+so u don't want it like tthis. what do u do?
+THIS IS A LIMITATION OF COUNT META AGUMENT, BCOS IT RETURNS A LIST U CANNOT TAKE SOMETHING IN D MIDDLE OR 
+BEGINNING OF A LIST.
+
+So terra came out with a better mega argument called for_each
+
+for_each
+for each does not wk on list, so u cannot pass a list like above.
+if u have a list u have to convert it to a set.
+modify only resource.tf as below
+
+#EC2Binstance configurations
+resource "aws_instance" "test_ec2" {
+  for_each = toset(var.demo_count)
+  #count         = length(var.demo_count)
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["dev"]
+
+  tags = {
+    Name = each.value
+  }
+}
+
+variable "demo_count" {
+  type    = list(string)
+  default = ["dev", "uat", "prod"]
+}
+
+in terraform plan you see it is putting d name of d resource and not index no as for count.
+it is only destroying what u deleted leaving d othrs unchanged.
+
+so for each is more reliable /flexible when u are maging ur e't.
+in wk e't u will see many for each.
+so this is a meta argumetn it merely alters d behavior of how d resources will be 
+created, d id etc remain d same.
+so if u add stage in d middle of d var. it is going to add it without changing d others.
+
+PROVIDER
+our providr can also be a meta argumetn. bcos we can alter how we want tis resources to be 
+created.
+we cn pass a providr block, and we can say our region is us-east-1
+then u can add another one with an alias and region as below. my default region is us-east-1
+
+if i want to provision my rseource in another region, i can do as under in d resource conf.
+d resource will be created in alias region
+
+resource "aws_instance" "test_east2" {
+  provider = aws.east
+  for_each = toset(var.demo_count)
+  #count         = length(var.demo_count)
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["dev"]
+
+  tags = {
+    Name = each.value
+  }
+}
+
+resource "aws_instance" "test_east1" {
+  for_each = toset(var.demo_count)
+  #count         = length(var.demo_count)
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["dev"]
+
+  tags = {
+    Name = each.value
+  }
+}
+
+
+variable "demo_count" {
+  type    = list(string)
+  default = ["dev", "uat", "prod"]
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+#default region = "us-east-1"
+provider "aws" {
+  alias  = "east"
+  region = "us-east-2"
+}
+
+it created 6 rsources why?
+
+
+
 
  
 - There are 5 Meta-Arguments in Terraform which are as follows:
