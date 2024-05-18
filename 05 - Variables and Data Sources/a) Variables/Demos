@@ -273,6 +273,9 @@ my_instance_name = "prod-ec2"
 #this concept is called dry = don't repeat urself.
 #(we use var files, we write d same code, we make sure that anything we can pass as a var. we use var files so
 #as not to repeat ourselves. all we are changing is just values in our var file like in dev.tfvars.
+d
+d name of d file can also be like dev.auto.tfvars. with d word auto, it means d file will be automatically loaded.u don't 
+need to pass it on d command line  -var-file=prod.tfvars
 
 XXXXXXXXXXXXXXXXXXXXXXX
 DATA SOURCES
