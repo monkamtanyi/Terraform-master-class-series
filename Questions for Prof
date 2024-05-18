@@ -2,6 +2,11 @@ my terraform is not behaving as expected on d vs code. DONE
 when i do terra init it does not create a terraform block as expected. DONE
 Apply complete! Resources: 0 added, 0 changed, 0 destroyed. DONE
 I was unable to cd into .aws to see d various credentials as u demonstrated.
+
+*******using the same file i can deploy to 
+#multiple e't-
+
+
 monka@DESKTOP-0PEDM4P MINGW64 ~/OneDrive/Desktop/terraform-series/ec2-02/ec2-03 (master)
 $ cd ~/ .aws
 bash: cd: too many arguments
