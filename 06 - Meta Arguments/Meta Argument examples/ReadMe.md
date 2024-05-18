@@ -1,6 +1,186 @@
 # Terraform Meta-Arguments
 
 - Meta arguments alter the behavior of a resource.
+  aguements change d resources, if i change d ami, it will change resource, if i change d instance
+  type, i have changed d resource. but meta agument alter d behavior of d resource.
+
+resource "aws_instance" "test_ec2" {
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["dev"]
+  #user_data     = file("${path.module}/httpd.sh")
+
+  tags = {
+    Name = var.my_instance_name
+  }
+}
+#EIP configurations
+resource "aws_eip" "my_eip" {
+  instance = aws_instance.test_ec2.id
+}
+this eip is attached to d instance, so it needs d instance id, it depends on d instance.
+in terra we call this iimplicit dependency(terra determines w resorce need to be created first). 
+meaning that when i make a plan to provision above, resoruce-terraform plan- terra
+will plan to create d instance first b4 d eip, because d eip needs d id of d instance. w will be
+used to attach it to the instance.
+
+we can have explicit dependency.
+means that u as an engr determines w resource needs to be created first.
+suppose i want to create an aws_vpc called my_test
+d only aguement to pass inside this resource blk is d cidr_block
+i want d instance to be created and placed inside this vpc under.
+this means i have to put it in a subnet.
+i can pass a subnet id on my ec2. but this subnet needs to come from the vpc i am creating.
+so how do i get a subnet from this vpc, so this bcomes an attribute
+so goto aws_vpc look for attribute reference- can i get a subnet from that vpc as an output?
+so try aws_subnet- basic usage= i can create a subnet in a vpc. copy to code.
+this subnet wil be inside this vpc. so my vpc_id will be taged with d vpc name my_test
+nest how do i get id of subnet-goto attribute ref. i need this id bcos that is where d
+instance will be provisioned. pass d subnet id as shown below.
+
+so with this i am creating a vpc with a subnet within that vpc. this instance will be placed
+inside this subnet. u see i am not using a default subnet, i am defining where i want my 
+instance to be created (explicit...), with this i can say bcos my instance depents on d vpc,
+i can instruct terra explicitely by using depends on meta aguement - this depends on
+(see under) is justaltering how this resource will be created it is just sayin g that this 
+resource has to be created first b4 this.
+implicitely d subnet can only be created after d vpc has been created.
+i can goto documentation and look for aws_instance resource
+
+
+#EC2Binstance configurations
+resource "aws_instance" "test_ec2" {
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["dev"]
+  #user_data     = file("${path.module}/httpd.sh")
+  #wking with an ubuntu instance i don't need above.
+
+   subnet_id = aws_subnet.main.id
+   depends_on = [aws_vpc.my_test]
+  tags = {
+    Name = var.my_instance_name
+  }
+}
+
+#EIP configurations
+resource "aws_eip" "my_eip" {
+  instance = aws_instance.test_ec2.id
+}
+
+resource "aws_vpc" "my_test" {
+  cidr_block = "10.0.0.0/16"
+}
+
+resource "aws_subnet" "main" {
+  vpc_id     = aws_vpc.my_test.id
+  cidr_block = "10.0.1.0/24"
+
+  tags = {
+    Name = "Main"
+  }
+}
+
+
+
+
+look at d ordr of creation
+aws_vpc.my_test: Creating...
+aws_vpc.my_test: Creation complete after 2s [id=vpc-0ab934bfdc6978dc2]
+aws_subnet.main: Creating...
+aws_subnet.main: Creation complete after 1s [id=subnet-0f10f6dc9f7823f26]
+aws_instance.test_ec2: Creating...
+aws_instance.test_ec2: Still creating... [10s elapsed]
+aws_instance.test_ec2: Still creating... [20s elapsed]
+aws_instance.test_ec2: Still creating... [30s elapsed]
+aws_instance.test_ec2: Creation complete after 32s [id=i-006bfb1728ef92515]
+aws_eip.my_eip: Creating...
+
+check aws   counsel>vpc check vpc created.>select d vpc created>resources map new to see
+d subnet just created called main> click on arrow at end for dtails info ie 
+vpc>subnet>subnet-Oe1n.../Main
+check d subnet id an name in d instance to ensure it correspond to d one created
+so hwre we have explicitely decided on how we want our resource created.
+we have seen d first meta agument= depends on. meta aguement just alter d 
+behavior of how u wqnt d resources to be created.
+
+vpc created first, 2nd subnet 3rd instance- bcos d instance is placed in this subnet.
+
+COUNT
+Suppose we want to create more than 1 resources say 2 instance at once. we 
+use count.
+create a dir called count
+copy resource.tf and data.tf into it
+count is no. of rsources u wnat to create
+
+if i run terra with say count = 3, how will it differentiate d resources or instances created.
+use index. count returns a list [list use square brackets], so count.index is going to 
+index d resources.
+d 1st obj created will be at index position 0, d 2nd index position 1 and d 3rd index position 2.
+
+resource.tf
+
+#EC2Binstance configurations
+resource "aws_instance" "test_ec2" {
+  count = 3
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["dev"]
+
+  tags = {
+    Name = "Demo-ec2 {$count.index}"
+  }
+}
+
+variable.tf
+
+variable "us_region" {
+  type    = string
+  default = "us-east-1"
+}
+
+variable "my_instance_type" {
+  type = map(any)
+  default = {
+    dev     = "t2.micro"
+    staging = "t2.medium"
+    prod    = "t3.micro"
+  }
+}
+
+variable "my_instance_name" {
+  type    = string
+  default = "Demo-ec2"
+}
+
+data.tf
+
+#provider "aws" {}
+
+# using default region.
+
+data "aws_ami" "ubuntu_ami" {
+  most_recent = true
+  owners      = ["099720109477"]
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+}
+
+
+ 
 - There are 5 Meta-Arguments in Terraform which are as follows:
 ```
 depends_on
