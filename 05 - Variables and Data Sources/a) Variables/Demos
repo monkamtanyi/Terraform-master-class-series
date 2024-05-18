@@ -279,24 +279,111 @@ need to pass it on d command line  -var-file=prod.tfvars
 
 XXXXXXXXXXXXXXXXXXXXXXX
 DATA SOURCES
+data source in terra can go and get info for you instead of u going to manually get d info.
+eg lets get d data from an ubuntu ami
+lets start by creating a file called say data.tf in our dir (settings)
+
+dir data under settings
+data.tf
+cd settings and  data   to run it.
+
+#key word to start with is data
+data "aws_ami" "ubuntu_ami" { #i want to get data for ami
+  most_recent = true   #i want to get the most recent ami.
+  owners = ["099720109477"] #ami account id of the owner. check in aws(amazone machine image).
+
+  filters {
+    name   = "name"            #ami name
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"] #i am filtering by d name and iwant amazon to return all d dates.
+  }
+    filters {
+      name   = "virtualization_type" #ami virtualization type
+      values = ["hvm"]
+    }
+      filters {
+        name   = "Architecture"
+        values = ["x86_64"]
+      }  
+
+     filters {
+        name   = "Root-device-type"
+        values = ["ebs"]   
+     }      
+}
+#this data will go to aws and look at d ami with this name, architecture, virtualization and root-device-type,
+then return d most recent.
+
+lets put this data source in its own dir and see if it is going to fetch our ami.
+
+terraform plan will fetch the ami id as expected
+data.aws_ami.ubuntu_ami: Read complete after 0s [id=ami-09040d770ffe2224f]
+ami id copied from aws  - AMI ID: ami-09040d770ffe2224f    u see its d same.
+now that it has pulled d ami dynamically how then can we use it inour code.
+first copy the data.tf from data dir created above to the dir where all our files are ie settings
+ls to see data.tf in settings dir.
+
+i can read this ami using thid data source. so how do i reference this data source.
+i will reference it in d resource
+
+with this data source for my region, i can provision this instance by it going to fetch d data for me.
+once it fetch d data, it injects it in there as an ami.
+
+#terraform plan. it reads d data, find d ami id and injects it into the ami as a value.
+#terra will now use it to create our ami.
+#suppose i change d region in d var. file. if i run terraform plan, it will still find the ami id in that region
+and inject it into the ami as a value. terra will now use it to create our ami in that region.
+d data source just go to the region passed and return d id.
+this id attribute is actually replaced in ami = data.aws_ami.ubuntu_ami.id ***replaced here.
+with this i can dynamically provision my infrastructure withourt going to aws to get the ami.
+so we are using data sources to go into aws get thhe info, and inject it into our code dynamically.
+
+if i want to get d id of a vpc that exist, u can use the data source instead of going to d counsel.
+
+u can get doc. from d registry of terraform.
+eg to create say a ec2 instance, look under d resource section.
+we  also have data sources section. eg look for ami as a data source (aws_ami under data section)- u will see
+basic saamples on how to use it. things that we did above.
+
+Below is how d resource.tf file is configured to achieve data sources.
+
+#EC2Binstance configurations
+resource "aws_instance" "test_ec2" {
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["dev"]
+  #user_data     = file("${path.module}/httpd.sh")
+
+  tags = {
+    Name = var.my_instance_name
+  }
+}
+#EIP configurations
+resource "aws_eip" "my_eip" {
+  instance = aws_instance.test_ec2.id
+}
 
 
+#i am not supplying any variables, it is going to use d default
 
+I know longer need this variable under in my variable.tf bcos i have a data source
+w will do that job of fetching d ami id for me in ahy region
 
+this data source is for ubuntu, i can create a data source for my amazon linux, my redhat etc., 
+goto d git hub, there are some data sources in 
+05 - Variables and Data Sources/b) Data sources/1. manifests prof have samples for redhat, ubuntu and 
+amazonelinux - ie how to build d data source.
 
+//////
+do an assignment on redhat and amazonlinux. build their data sources.
+when its done, replace it in 2 example-datasource with amazonelinux try to provision d resource.
+do also for redhat 
+///////
 
+Note if u created it urself, then use self.
 
-
-
-
-
-
-
-
-
-
-
-
+variable "my_ami" {
+  type    = string
+  default = "ami-02bf8ce06a8ed6092"
+}
 
 
 
