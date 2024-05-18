@@ -375,16 +375,20 @@ variable "demo_count" {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = "us-east-2"
 }
 #default region = "us-east-1"
 provider "aws" {
   alias  = "east"
-  region = "us-east-2"
+  region = "us-east-1"
 }
 
 PROF PROMISED TO TROUBLE SHOOT BCOS REQD RESULT NOT GOT.
+But bisically when u use a provider from aws, u cam configure ur rsources
+tp be created om a diff region.
+so w3 are altering d behavior of how d resources will be provision.
 
+Next meta argument lifecycle.  bl 14min
  
 - There are 5 Meta-Arguments in Terraform which are as follows:
 ```
