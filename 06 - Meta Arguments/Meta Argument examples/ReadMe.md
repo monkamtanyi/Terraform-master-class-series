@@ -315,10 +315,75 @@ provider "aws" {
   region = "us-east-2"
 }
 
-it created 6 rsources why?
+it created 6 rsources why?  error
+prof created another data.tf in count.dir. and modify d resource.tf as under.
+he conf it as follows ie named it unbuntu_ami_1) see under 
+
+data1.tf
+data "aws_ami" "ubuntu_ami_1" {
+  most_recent = true
+  owners      = ["099720109477"]
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+}
+
+resource.tf
+#EC2Binstance configurations
+resource "aws_instance" "test_east2" {
+  provider = aws.east
+  for_each = toset(var.demo_count)
+  #count         = length(var.demo_count)
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["dev"]
+
+  tags = {
+    Name = each.value
+  }
+}
+
+resource "aws_instance" "test_east1" {
+  for_each = toset(var.demo_count)
+  #count         = length(var.demo_count)
+  ami           = data.aws_ami.ubuntu_ami_1.id
+  instance_type = var.my_instance_type["dev"]
+
+  tags = {
+    Name = each.value
+  }
+}
 
 
+variable "demo_count" {
+  type    = list(string)
+  default = ["dev", "uat", "prod"]
+}
 
+provider "aws" {
+  region = "us-east-1"
+}
+#default region = "us-east-1"
+provider "aws" {
+  alias  = "east"
+  region = "us-east-2"
+}
+
+PROF PROMISED TO TROUBLE SHOOT BCOS REQD RESULT NOT GOT.
 
  
 - There are 5 Meta-Arguments in Terraform which are as follows:
