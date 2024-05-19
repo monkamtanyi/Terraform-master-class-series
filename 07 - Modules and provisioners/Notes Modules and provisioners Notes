@@ -1,0 +1,179 @@
+create a new dir ec2 and copy and paste provider.tf, resources.tf, data.tf, variables.tf from settings 
+to ec2. this is how u reuse resources.
+I can run my terra files when i am inside ec2 dir. this ec2 dir bcomes my wking dir.
+bcos it is my wking dir, all these files in ec2 make a module. a module is terra configuration
+files within a dir. it is in this dir that i can run my terra wkflow.
+if i am running my terra commands directly inside ec2, this is what we call a root modules.
+bcos i am running my wkflw in d dir that ia am in.
+so i can consider ec2 as my module. this is my ec2 module.
+it is a module that will create an ec2 instance and a vpc- it is a module bcos it has terra
+configuration.
+if i want to call this ec2 module, i can create a terra file- main.tf, outside of that module.
+to call this module, we use a module block- give it any name=ec2_module.
+calling d module, use keyword source. d source of d module is d path were that dir is
+in this case my module is in my present wking dir inside a dir called ec2 =./ec2
+
+main.tf
+module "ec2_module" {
+  source = "./ec2"
+}
+
+monka@DESKTOP-0PEDM4P MINGW64 ~/OneDrive/Desktop/terraform-series (master)
+$ ls
+ec2/  ec2-02/  main.tf
+
+when i run my code in terraform-sereies it will be reading main.tf. bcos this is d only 
+terra file that exist in this dir.
+in this main.tf i am calling ec2, 
+run terraform init
+
+Initializing the backend...
+Initializing modules...
+- ec2_module in ec2
+
+it initializses ur backend ie where d terra api is going to be stored, where d terra operations
+are going to happen. for our case we have been wking using a local bkend- where when u run
+terraform init it downloads ur api into ur local e't.
+
+d second thing it does is it initializws ur modules, it will go and downld ur module - check your 
+terra dir under .terraform u will see providers and modules downloaded. and inside d module dir, it has a json 
+file that reference d source dirctory of d module.
+it means terra will be reading ur code from that dir.
+
+when u run terraform plan, see how it is reading
+module.ec2_module.data.aws_ami.ubuntu_ami: Reading...
+
+module.ec2_module.data.aws_ami.ubuntu_ami: Read complete after 0s [id=ami-09040d770ffe2224f]
+so it goes to ur modules and read d files to plan ur resources that are 
+going to be created.
+
+this ia a benefit that terra provides, u can create modules and refer to them.
+so we can be smart, and create a module 4 our vpc and another 4 for our instance
+create dir called vpc, and vpc.tf in it.
+then goto resource and cut all vpcs and put in vpc.tf.
+i can also make this vpc reusable by creating a var file within vpc.tf
+in d vpc.tf, - passing cdir as var.
+as under.
+
+vpc.tf
+resource "aws_vpc" "my_test" {
+  cidr_block = var.cidr
+  tags = {
+    Name = "mydemo-vpc"
+  }
+}
+
+resource "aws_subnet" "main" {
+  vpc_id     = aws_vpc.my_test.id
+  cidr_block = var.sub_cidr
+
+  tags = {
+    Name = "Main"
+  }
+}
+
+variable "cdir" {
+    type = string
+    default = "10.0.1.0/16"      
+}
+
+variable "sub_cdir" {
+    type = string
+    default = "10.0.1.0/24"
+        
+}
+
+d variables confi gured can be cut to d variable.tf in vpc dir.
+
+cp / paste provider from ec2 to main.tf
+refactory d provider in ec2 ie provider.tf.md  just rename it so that it will not be read.
+d instnce in rsource.tf depends on that subnet
+this subnet id comes from a diff module - a diff vpc (create an output here and reference it in ec2).
+Crefer or call d output from my module called vpc =module.vpc.subnet_id (module.vpc is just
+any name i gave)
+to get something outside of a module (in this case d subnet id) we have to create an output.
+this is referencing an attribute from a module u have to create an output.
+goto resorce.tf in ec2 and call vpc - i have to go out of ec2 dir to dir called vpc
+w is now d soruce  ie sourc = "../vpc"
+this voc is a clild module bcs it is being called from a root module.
+
+vpc.tf
+resource "aws_vpc" "my_test" {
+  cidr_block = var.cidr
+  tags = {
+    Name = "mydemo-vpc"
+  }
+}
+
+resource "aws_subnet" "main" {
+  vpc_id     = aws_vpc.my_test.id
+  cidr_block = var.sub_cidr
+
+  tags = {
+    Name = "Main"
+  }
+}
+
+output "subnet_id" {
+  value = aws_subnet.main.id
+}
+
+output "subnet_id" {
+    value = aws_subnet.main.id
+}
+
+resource "aws_instance" "test_ec2" {
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["dev"]
+  subnet_id     = module.vpc.subnet_id
+
+  #depends_on    = [aws_vpc.my_test]
+  tags = {
+    Name = var.my_instance_name
+  }
+}
+
+module "vpc" {
+  source = "../vpc"
+}
+
+next goto main.tf to also call this vpc module as a child module.
+see under
+
+main.tf 
+module "ec2_module" {
+  source = "./ec2"
+}
+
+module "vpc" {
+    source = "./vpc"
+}
+
+terraform {
+  required_version = "~> 1.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+resource.tf in ec2
+resource "aws_instance" "test_ec2" {
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["dev"]
+  subnet_id     = module.vpc.subnet_id
+
+  #depends_on    = [aws_vpc.my_test]
+  tags = {
+    Name = var.my_instance_name
+  }
+}
+
+do terraform initialize to downld my vpc
+
+
+
+
+
