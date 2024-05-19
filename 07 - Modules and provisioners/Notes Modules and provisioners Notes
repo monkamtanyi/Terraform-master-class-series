@@ -95,7 +95,12 @@ to get something outside of a module (in this case d subnet id) we have to creat
 this is referencing an attribute from a module u have to create an output.
 goto resorce.tf in ec2 and call vpc - i have to go out of ec2 dir to dir called vpc
 w is now d soruce  ie sourc = "../vpc"
-this voc is a clild module bcs it is being called from a root module.
+this vpc is a clild module bcs it is being called from a root module.
+(i am calling d module output (w is found in my module vpc) from d resource.tf 
+d out put created in vpc.tf is called subnet_id, but its value is aws_subnet.main.id,
+and i am calling it from d rsorce as -  source = "../vpc"
+(thus if u are wking with child module, iu u want to create attribute from that module u 
+need to create an output)
 
 vpc.tf
 resource "aws_vpc" "my_test" {
@@ -125,7 +130,7 @@ output "subnet_id" {
 resource "aws_instance" "test_ec2" {
   ami           = data.aws_ami.ubuntu_ami.id
   instance_type = var.my_instance_type["dev"]
-  subnet_id     = module.vpc.subnet_id
+  subnet_id     = module.vpc.subnet_id          //this is d root module 
 
   #depends_on    = [aws_vpc.my_test]
   tags = {
@@ -145,7 +150,7 @@ module "ec2_module" {
   source = "./ec2"
 }
 
-module "vpc" {
+module "vpc" {                        // child module
     source = "./vpc"
 }
 
@@ -172,6 +177,137 @@ resource "aws_instance" "test_ec2" {
 }
 
 do terraform initialize to downld my vpc
+
+next suppose i want d Name of my aws_vpc to reflect an  app name, team (w team is it devops, engr team
+hr, finance etc), d e't dev, staging prod?
+to achieve this i can create multiple variables in variables.tf (vpc dir) as below
+Aftr that i can create a locals block  - i don't want to pass this long name as a name to my vpc
+so this so this is why locals block comes in. inlocals bk u can define long names that u want 
+to reference to but u don't want to keep referencing this name in ur code.
+after that i will goto my vpc.tf in vpc dir and say Name= local.vpc_name, - i am refering to d key
+w is Name in my locals bk in variables.tf.
+so if i want to change d name of d vpc to finance, i simply go to my variable division bk and
+and change default to finance. same applies to other e't.
+
+qqqqqqqqqqqqqqqqqq
+vpc.tf in vpc dir
+resource "aws_vpc" "my_test" {
+  cidr_block = var.cidr
+  tags = {
+    Name = local.vpc_name
+  }
+}
+
+resource "aws_subnet" "main" {
+  vpc_id     = aws_vpc.my_test.id
+  cidr_block = var.sub_cidr
+
+  tags = {
+    Name = "Main"
+  }
+}
+
+output "subnet_id" {
+  value = aws_subnet.main.id
+}
+7777777
+variable.tf in vpc dir
+variable "cidr" {
+  type    = string
+  default = "10.0.0.0/16"
+}
+
+variable "sub_cidr" {
+  type    = string
+  default = "10.0.0.0/24"
+}
+
+variable "app_name" {
+  type    = string
+  default = "jenkins"
+}
+#name of my application is "jenkins
+variable "env" {
+  type    = string
+  default = "prod"
+}
+
+variable "division" {
+  type    = string
+  default = "HR"
+}
+/*
+locals {
+  vpc_name = "var.app_name" - "var.env" - "var.division"  Profs own did not wk
+} 
+*/
+
+  locals {
+  vpc_name = "${var.app_name}-${var.env}-${var.division}"
+}
+777777777
+
+this modulw that we are creating is called a custom module bcos we are creating it.
+
+Tell me what u have dome with terra
+with terra i have created custom modules, whereby i am writing codes, formating it.
+i copy codes from d reg.but i customize it to meet our needs.
+we push these custom modules to our repo, once we push them we now call them or make 
+reference to them.
+
+d other type of modules are terraform  official modules. terraform.io>registry>browse modules>
+if i want to create a terraform vpc module> click on it>can just copy this under provision instructions
+
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.8.1"
+}
+i can create a dir called official_modules w a file main.tf, paste above there.
+
+d source is terraform official reg and version 5.8.1.
+cd into official_modules
+terraform init    it downloads that module from d reg.
+goto official_modules, u will see d .terraform dir, when i open it i have modules
+when i open d module i see d vpc module downloaded and all other resoruces that 
+comes with d vpc.
+if u use like this y are using it as it is. scroll down to check 
+imputs (225), and out puts(things u can get out of that module).
+d sorce code of this module lives in github, click it (just above d Examples.
+open main.tf they have defined everything for that module -check locals bk.
+scroll to #VPC
+U SEE that d module is being created as a resource
+they are using count
+
+resource "aws_vpc" "this" {
+  count = local.create_vpc ? 1 : 0
+the ? is checking if local.create_public_subnets && ... had been set to true.
+if true then create 1 vpc, if false create 0
+so this operand ? is checking d condition
+either true or false.
+there is a locals bk that has been defined
+and is checking that particular condition.
+scroll down and look for it.
+see d many variables that has been written
+to create that vpc.
+
+look at version, and output
+if u want to use d module as it is u can use
+d one from d provision instructions one.
+
+
+
+
+
+
+
+
+
+terraform init
+terraform fmt --recursive  - will format all files in all d terraform directories.
+terraform validate
+terraform plan
+terraform apply
+
 
 
 
