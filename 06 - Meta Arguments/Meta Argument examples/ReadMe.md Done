@@ -389,6 +389,36 @@ tp be created om a diff region.
 so w3 are altering d behavior of how d resources will be provision.
 
 Next meta argument lifecycle.  bl 14min
+
+LIFECYCLE
+by default when u want to say change d ami, terra will first destroy it b4 creating.
+but when u want to change this behavior, ie for terra to create first b4 destroying 
+u use lifecle meta argument. u can pass argument like
+creat_before_destroy:
+prevent_destroy:   -u can't destroy that resource- use a lifecycle argumetn to prevent 
+accidental destruction of ur resorces.
+ignore_changes:
+
+if i change above instant from dev to prod, it means prod will be created b4 
+dev is destroyed. lookes like this
+
+#EC2Binstance configurations
+resource "aws_instance" "test_east2" {
+  provider = aws.east
+  for_each = toset(var.demo_count)
+  #count         = length(var.demo_count)
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.my_instance_type["prod"]
+
+  tags = {
+    Name = each.value
+  }
+  lifecycle {
+    create_before_destroy = true
+    #prevent_destroy = true
+  }
+}
+
  
 - There are 5 Meta-Arguments in Terraform which are as follows:
 ```
