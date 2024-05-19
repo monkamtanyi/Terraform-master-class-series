@@ -290,17 +290,30 @@ scroll down and look for it.
 see d many variables that has been written
 to create that vpc.
 
+
 look at version, and output
 if u want to use d module as it is u can use
 d one from d provision instructions one.
+if i want to customize it say i don't want internet gateway, i will do this
 
+main.tf in official_modules dir
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.8.1"
+  *#create_igw = false
+  * #create_vpc = false  if u apply this it will not create d vpc.
+}
 
+d official input will create internet gateway, so now i must pass above else igw will be created.
+Create official_modules dir, create a file called terraform.tfvars ain it nd put those var (*) there.
+when i run d code, d .tfvars file will run automatically. i can also decide to pass this 
+(also put d above main.tf in it first) in d main.tf) .
 
+so u can customize this official module by passing d variables undr usage. they have not 
+passed all these vars yet.
 
-
-
-
-
+check examples in landmark master class series modules and provisioners.   bl 21min video
+(d modules are called from main.tf)
 
 terraform init
 terraform fmt --recursive  - will format all files in all d terraform directories.
