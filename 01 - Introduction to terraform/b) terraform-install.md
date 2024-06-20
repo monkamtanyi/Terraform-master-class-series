@@ -2,8 +2,8 @@
 
 ## a) Prerequisites
 - Install Terraform CLI
-- Install AWS CLI
-- Install VS Code Editor or any other IDE for writing your code.
+- Install AWS CLI    this will  help u configure ur credentials to allow terra interact with ur cloud provider.
+- Install VS Code Editor or any other IDE Integrated development e't) for writing your code.
 - Install HashiCorp Terraform plugin for VS Code - if you are using VS Code.
 
 ## b) Installation
