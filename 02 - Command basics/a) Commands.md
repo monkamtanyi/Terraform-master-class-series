@@ -26,7 +26,7 @@ if ur provider is google it will go to d reg and download that provider b4 u sta
   - It downloads providers and modules
 
 **terraform validate**:
-  - Validates the configuration files in the respective directory to ensure that they are syntactically valid and internally consistent. bcos when u are writing a terra conf files, it has to adhere to hashicorp configuration language w is human readable.
+  - Validates the configuration files in the respective directory to ensure that they are syntactically valid and internally consistent. bcos when u are writing a teraform manifest file -terra conf files, it has to adhere to hashicorp configuration language w is human readable.
  so terra has to validate if what u have written is valid.   
 
 **terraform plan**:
@@ -37,12 +37,12 @@ if ur provider is google it will go to d reg and download that provider b4 u sta
    api to go to aws and find out if d conf files that u created is able to create that rsesource.
 this is d pt where u need ur aws credentials bcos it has to interact with aws to enable it generate a plan for u.
 if u want to create an ec2 instance 4 ex, it will read this in d conf file, and make a plan to ensure that u achieve that desired step.
-so u have to review d plan and approve d plan, then run terra apply
+so u have to review d plan and approve d plan, then run terraform apply
 
 **terraform apply**:
   - Used to apply the changes required to reach the desired state of the configuration 
-  - By default, apply scans the current directory for the configuration and applies the changes appropriately.
-  - The state file is created when apply is ran the first time.
+  - By default, apply scans the current dterra irectory for the configuration and applies the changes appropriately.
+  - The statefile is created when apply is ran the first time.
   - When you run terraform apply, Terraform reads your configuration files, determines what changes need to be made to your infrastructure, applies those changes, and then updates the state file to reflect the new state of your infrastructure. This state file is crucial for Terraform to manage your infrastructure effectively, enabling features like dependency tracking, resource management, and state management.
   - However, the state file is not created for every configuration file individually. Instead, it represents the state of the entire infrastructure described by all your Terraform configuration files within a specific directory (usually referred to as a Terraform workspace or project).
   - The Terraform state file is created for each Terraform workspace or working directory. When you initialize a new Terraform project with terraform init and then apply changes with terraform apply, Terraform creates and manages a state file specific to that workspace.
@@ -54,10 +54,11 @@ Each workspace has its own state file because it tracks the state of the infrast
  - This will ask for confirmation before destroying.    
 
 ## Prerequisites
-in whatever region u want to create ur resources(eg ec2 instance, just make sure u have a default vpc there. ie if u are creaating say an ec2, if u don't pass any 
-vpc id, then d resource will be placed in default vpc.
+in whatever region u want to create ur resources(eg ec2 instance, just make sure u have a default vpc there.
+ie if u are creaating say an ec2, if u don't pass any  vpc id, then d resource will be placed in default vpc.
+
 - **Pre-Conditions-1:** Ensure you have **default-vpc** in that respective region
-- **Pre-Conditions-2:** Ensure AMI you are provisioning exists in that region if not update AMI ID
+- **Pre-Conditions-2:** Ensure AMI you are provisioning exists in that region if not update AMI ID (AMI is region specific)
 - **Pre-Conditions-3:** Verify your AWS Credentials in **$HOME/.aws/credentials**
 
 ```
