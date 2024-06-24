@@ -8,10 +8,11 @@ https://www.terraform.io/docs/configuration/syntax.html
 #d content of d curly bbraces represent d content of a block.
 blk type =prvidr, resources, etc
 blk label= resource type (ie if blk type =resource as an ex)
-blk label =d name, local to terra, this will differentiate diff resources- u can create many instanes w diff names
+blk label =d name, local to terra, this will differentiate diff resources- u can 
+create many instanes with diff names.
 Blocks are containers for code, delimited by d curly braces
 we pass aguements in d curly braces.
-in terra everything we create will be a resource, all resource blk req. 2 labels
+In terraform everything we create will be a resource, all resource blks req. 2 labels
 other blks req 1 label.
 
 #Template
