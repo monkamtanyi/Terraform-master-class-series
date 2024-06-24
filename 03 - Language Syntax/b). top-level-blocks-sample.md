@@ -3,6 +3,9 @@
 ## Block-1: **Terraform Settings Block**
 ```
 #optional, if u don't provide, then it result to default, where version is latest.
+recommended to use the latest version.
+Use this block when u want to provide a specific version of terraform to use.
+
 terraform {     #1.0.0 major, minor and patched version. only d most right value can vary.
   required_version = "~> 1.0" #1.1.4/5/6/7   1.2/3/4/5 1.1.4/5/6/7
   required_providers {          #in most cases we constraint d version to d major value
@@ -17,6 +20,8 @@ if i need to pass a specific version of terra, then i will need to  pass my terr
 if u go to aws as a provider (ie reg), u will see d source and latest version., 
 Providers hashicorp aws Latest Version
 
+
+
 ## Block-2: **Provider Block**
 ```
 provider "aws" {
@@ -27,6 +32,7 @@ when u do aws configure, it sets a d default region. if u don't pass a specific 
 it sets d default region as ur wking region. if u don't pass any credential it uses 
 your default credential w is passed during aws configure.
 thus a code like this 
+
 provider "aws" {}  means i am using my default credentials and region.
 ```
 
@@ -39,21 +45,22 @@ resource "aws_instance" "inst1" {
 }
 
 if asked to provision a vpc, goto reg, search aws_vpc left corner
-if u want to create vpc, check in d resource section. but if have already created and y want 
+if u want to create vpc, check in d resource section. but if i have already created and y want 
 to get maybe d value check in d data source section.
 
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"    #one agument req plus d resource type and name
+  cidr_block = "10.0.0.0/16"    #one agument req plus d resource type and resource name
 }
 if u want to add agument scroll down to d aguement section. most are optional.
 
 ```
 
 ## Block-4: **Input Variables Block**
-this gives us an input, use a variable block to pass values into ur resources
+this gives us an input, use a variable block to pass values into ur resources.
 variable blk expects 1 label= name of d var. give it any name that is unique to terra.
-but d naming convention shld be able to guide another colleague to understand what
-u are doing. eg if i am passing a var for an instance, i can name it instance_type
+But d naming convention shld be able to guide another colleague to understand what
+u are doing. eg if i am passing a var for an instance, i can name it instance_type-
+so by looking at it u know what is being passed = instance_type
 this var block req a type= ie string, number, boolean etc.
 ```
 variable "instance_type" {
