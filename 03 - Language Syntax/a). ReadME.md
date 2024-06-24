@@ -22,7 +22,7 @@ other blks req 1 label.
        # Block body
       <IDENTIFIER> = <EXPRESSION> # Argument
      }
-ha
+
 
 
 ## Terraform has 10 high level blocks
