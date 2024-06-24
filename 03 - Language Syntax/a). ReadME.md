@@ -73,7 +73,8 @@ eg ami-04d29b6f966df1537 above is an expression.
 - The format looks like `resource_type.resource_name.attribute_name`
 - 
 resource_type=aws_instance, resource_name=ec2demo, attribute_name=public_ip
-got attribute_name from d attribute reference in aws_instance resource found in terra registry.
+got attribute_name from d attribute reference in aws_instance resource
+found in terra registry.
 it becomes
 
 aws_instance.ec2demo.public_ip
@@ -93,7 +94,8 @@ give it a label eg instance_private_ip
 ## Identifiers
 - Argument names, block type names, and the names of most Terraform-specific constructs like resources, input variables, etc. are all identifiers.
 
-- Identifiers can contain letters, digits, underscores (_), and hyphens (-). The first character of an identifier must not be a digit, to avoid ambiguity with literal numbers.
+- Identifiers can contain letters, digits, underscores (_), and hyphens (-).
+-  The first character of an identifier must not be a digit, to avoid ambiguity with literal numbers.
 
 ## Comments
 - The Terraform language supports three different syntax for comments:
@@ -101,6 +103,7 @@ give it a label eg instance_private_ip
 The # begins a single-line comment, ending at the end of the line.
 // also begins a single-line comment, as an alternative to #.
 /* and */ are start and end delimiters for a comment that might span over multiple lines.
-The # single-line comment style is the default comment style and should be used in most cases. Automatic configuration formatting tools may automatically transform // comments into # comments, since the double-slash style is not idiomatic.
+The # single-line comment style is the default comment style and should be used in most cases. Automatic configuration formatting tools may automatically transform // comments into # comments, since
+the double-slash style is not idiomatic.
 ```
 
