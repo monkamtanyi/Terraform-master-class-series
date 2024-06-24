@@ -5,15 +5,17 @@ https://www.terraform.io/docs/configuration/syntax.html
 - A block is a container for other content.
 - An example of a block template is as below.
 ## Template
-#d content of d curly bbraces represent d content of a block.
+#d content of d curly braces represent d content of a block.
 blk type =prvidr, resources, etc
+
 blk label= resource type (ie if blk type =resource as an ex)
 blk label =d name, local to terra, this will differentiate diff resources- u can 
 create many instanes with diff names.
-Blocks are containers for code, delimited by d curly braces
+Blocks are containers for code, delimited by d curly braces.
 we pass aguements in d curly braces.
 In terraform everything we create will be a resource, all resource blks req. 2 labels
 other blks req 1 label.
+
 
 #Template
      <BLOCK TYPE> "<BLOCK LABEL>" "<BLOCK LABEL>"   {
@@ -21,6 +23,8 @@ other blks req 1 label.
       <IDENTIFIER> = <EXPRESSION> # Argument
      }
 ha
+
+
 ## Terraform has 10 high level blocks
       - Terraform Settings Block
       - Provider Block
