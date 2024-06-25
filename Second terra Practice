@@ -1,0 +1,61 @@
+provider "aws" {} # here we assume default region and default credentials.
+
+resource "aws_instance" "FirstEC2" {
+
+  ami           = var.ami
+  instance_type = var.instanceType
+
+  tags = {
+    Name = var.name
+    env  = var.et
+  }
+}
+
+variable "ami" {
+  type    = string
+  default = "ami-04b70fa74e45c3917"
+}
+
+variable "instanceType" {
+  type    = string
+  default = "t2.micro"
+}
+
+variable "name" {
+  type    = string
+  default = "firstec2"
+}
+
+variable "et" {
+  type    = string
+  default = "prod"
+}
+
+output "public_ip" {
+  value = aws_instance.FirstEC2.public_ip
+}
+
+
+#ami is region specific, error status code 400 
+#check to ensure  ur ami id is in same region as region 
+#u are using. this error shows up when u run apply.
+
+
+/*Error: creating EC2 Instance: operation error EC2:
+ RunInstances, https response error StatusCode: 400,
+  RequestID: 1f5af6d9-eeb8-4ed5-9840-f8ddc6e4e14f, api
+   error InvalidAMIID.NotFound: The image id 
+   '[ami-04b70fa74e45c3917]' does not exist
+   */
+
+/*
+This command uses cat to display the contents of the config
+ file inside the .aws directory located in your home 
+ directory (~).
+ you can see ur default region here
+    
+    cat ~/.aws/config
+[default]
+region = us-east-1
+output = json
+*/
