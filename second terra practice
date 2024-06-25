@@ -1,0 +1,18 @@
+
+monka@DESKTOP-0PEDM4P MINGW64 ~/Terraform training/ec2-02 (master)
+$ ls
+ec2.tf
+
+
+provider "aws" {
+    region = "us-east-1"
+}
+
+resource "aws_instance" "ec2" {
+    ami           = "ami-03cf127a"
+    instance_type = "t2.micro"
+    tags = {
+        Name = "Firstec2"
+    }
+}
+    
