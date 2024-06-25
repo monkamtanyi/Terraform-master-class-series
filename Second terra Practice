@@ -1,3 +1,7 @@
+
+monka@DESKTOP-0PEDM4P MINGW64 ~/terra today/Project-03/ec2-03 (master)
+
+
 provider "aws" {} # here we assume default region and default credentials.
 
 resource "aws_instance" "FirstEC2" {
