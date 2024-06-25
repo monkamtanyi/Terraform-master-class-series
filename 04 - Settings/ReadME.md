@@ -25,7 +25,12 @@ terraform {
 - Configure AWS Credentials in the AWS CLI if not configured
 ```t
 # Verify AWS Credentials
+
 cat $HOME/.aws/credentials
+[default]
+aws_access_key_id =XXXXXXXXXXXXXXXXX
+aws_secret_access_key = ZZZZZZZZZZZZZZZZZZZZZZZZ
+
 ```
 - Create [AWS Providers Block](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication)
 ```t
