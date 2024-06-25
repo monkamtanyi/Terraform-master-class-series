@@ -41,14 +41,16 @@ credentials (profile) will be used.
 5) attach elastic ip :an Elastic IP is particularly useful in scenarios where you need a persistent public IP address that doesn't change even if the instance or resource it's associated with is stopped or replaced.
 
 6) Next pass script in user data. user data is an agument inside ur resource
-create a bash file in d dir eg httpd.sh. copy d user data into it.
-d yum command is a redheart or linux command. check to ensure d instance u are
-creating is linux os(prof just went to launh instance and copied ami of amazone
-linux aws - meaning this is d instance that is being launched.
+Create a bash file in d dir eg httpd.sh. copy d user data into it.
+d yum command is for redheart or linux command. check to ensure d instance u are
+creating is linux Os(prof just went to launh instance and copied ami of amazone
+linux aws - meaning this is d instance that is being launched.)
 
 lets also tag d instance  Name = "Demo-ec2"
 #passing d id = attribute of d instance
 #file path is present wking dir
+
+terraform fmt checks for syntax b4 formatting.
 
 
 terraform {
@@ -68,7 +70,7 @@ provider "aws" {
 resource "aws_instance" "test_ec2" {
   ami           = "ami-02bf8ce06a8ed6092"
   instance_type = "t2.micro"
-  user_data     = file("${path.module}/httpd.sh")
+  user_data     = file("${path.module}/httpd.sh")  #file fn
 
   tags = {
     Name = "Demo-ec2"
@@ -79,3 +81,22 @@ resource "aws_eip" "my_eip" {
   instance = aws_instance.test_ec2.id
 }
 
+(terraform init
+
+Initializing the backend...
+
+Initializing provider plugins...
+- Finding hashicorp/aws versions matching "~> 5.0"...
+- Installing hashicorp/aws v5.55.0...
+- Installed hashicorp/aws v5.55.0 (signed by HashiCorp)
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.)
