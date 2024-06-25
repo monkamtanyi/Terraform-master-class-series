@@ -1,5 +1,8 @@
 
 monka@DESKTOP-0PEDM4P MINGW64 ~/terra today/Project-03/ec2-03 (master)
+$ ls
+ec2.tf  terraform.tfstate  terraform.tfstate.backup
+
 
 
 provider "aws" {} # here we assume default region and default credentials.
