@@ -29,14 +29,14 @@ variable "sshport" {
 **Boolean**
 - Bools are represented by the unquoted symbols true and false.
 ```t
-variable "enabled" {      variable "boolean"
-  default = false            type = bool
-}                            default = true or can be false
+      variable "boolean" {
+          type = bool
+    }      default = true or can be false
 ```
 use below
-variable "boolean"{
-type = bool
-default = false
+variable "boolean" {
+ type = bool
+ default = false
 }
 
 
@@ -49,8 +49,9 @@ variable "mylist" {              # eg i can have a list of instances.
 }
 ```
 - How do you reference List values ?
-
-     - instance_type = var.mylist[1]   [1] = what index value i want from d list, here shows 2nd value- value2
+  
+ - instance_type = var.mylist[1]   [1] = what index value i want from d list,
+   here shows 2nd value- value2
 
 **Map**
 - Maps/objects are represented by a pair of curly braces containing a series of KEY = VALUE pairs:
@@ -74,8 +75,10 @@ variable "inputname" {
   description = "Set the name of the VPC"
 }
 ```
-- note that if no default value is provided, then the variable will be an input variable and will prompt you to enter a value at runtime.
-- how do y make a variable reqd- by taking out d default value and allowin d user user to input that value on a command line.
+- note that if no default value is provided, then the variable will be an input variable
+   and will prompt you to enter a value at runtime.
+- how do y make a variable reqd- by taking out d default value and allowin d user user to
+   input that value on a command line.
 
  ```
 resource "aws_vpc" "myvpc" {
