@@ -1,0 +1,63 @@
+myregion = "us-east-1"
+
+
+when a file is named terraform.tfvars then this will is executed
+automatically - eg above example, us-east-1 will  overwrites the 
+ca-central-1 region stated in the variable file.
+if we don't pass this file, then terraform will fall back on the
+default region in d varible file -ca-central-1.
+
+
+my_instance_name = "prod-ec2"
+
+# above the instance name (tag) prod-ec2 will overwrite Demo-ec2.
+we can create .ftvars files for d diff e't. as shwon
+
+note d prod.tfvars will not be automatically executed bc it 
+it is no longer like terraform.tfvars file. and it does not
+have an auto attached to it.
+
+so on the cli, this is how u will pass it
+terraform plan -var-file=prod.tfvars
+above we are dvping a plan based on my dvp't variables.
+With this i can provision rsources in my dev. e.t.
+it will be reading from my dev. var file.
+
+thus this is how u can pass var files on a cli
+when we wk with module, we will create a module and have our var.
+to be reqd. 
+AND bc we want our code to be reusabe, we can create multiple files
+and ti want to use it in d dev. e.t, say my instance type is 
+t2medium, my prod t2large- using same file i can deploy to multiple
+e't. 
+Thus we can use d var file- we make var reqd or give them defaault 
+but we supply varibles files based on d e't(eg prod.tfvars 
+file and pass it on d cli as above eg 
+terraform plan -var-file=prod.tfvars).
+
+we are using d same code (my_instance_name) but all we are 
+changing is our variables - prod, dev, staging etc
+
+in terraform this is called dry. ie running a code dry in terra.
+(DRY - don't repeat yourself)
+we achieve DRY by writing variable file - everything that we 
+can pass as a variable, we make it a variable then we use var files
+to be able not to repeat ourselves. - we are just changing values
+in our var files- this is how we can easily deploy to mutilple 
+e't.
+
+Remember if u want it to be automatically loaded, then you shd pass 
+it like - u don't need to pass it on the command line.
+terraform.tfvars or
+prod.auto.tfvars
+dev.auto.tfvars  etc
+
+*/
+
+
+
+
+
+
+
+
