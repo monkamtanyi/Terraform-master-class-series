@@ -7,7 +7,7 @@ ca-central-1 region stated in the variable file.
 if we don't pass this file, then terraform will fall back on the
 default region in d varible file -ca-central-1.
 
-
+.
 my_instance_name = "prod-ec2"
 
 # above the instance name (tag) prod-ec2 will overwrite Demo-ec2.
