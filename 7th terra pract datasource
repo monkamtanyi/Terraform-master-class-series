@@ -1,0 +1,202 @@
+/* a data source in terra is an entity w can fetch
+ u info instead of u getting it manually.
+ eg getting the AMI info dynamically.
+
+key word to start is data. eg get ubuntu ami info
+*/
+
+provider "aws" {}
+
+data "aws_ami" "ubuntu" {
+  most_recent = true   # i want d most recent AMI.
+owner   = ["099720109477"]  # filter by owner id = owner acc id w is amazone= list
+
+  filter {
+   
+    name ="name" # filter by name
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"] #list
+     # filter by name of the AMI and all d dates that d ami was created use *
+     #- get from aws acc  d ami.
+  } 
+# i can add another filter like virtualization type
+
+filter {    
+    name ="virtualization-type"
+    values = ["hvm"]
+}              
+
+#can also filter by architecture type
+  filter {    
+    name ="architecture"
+    values = ["x86_64"]
+}              
+
+#can also filter by root device type
+  filter {    
+    name ="root-device-type"
+    values = ["ebs"]
+  }
+}
+/*
+if we apply this, d datasource will go to aws and look for ami that
+matches these names. and return d most recent ami.
+lets test it -put this datasource.tf in its own directory(data).
+
+after running terraform init and plan it gave me d ami id
+as under
+
+monka@DESKTOP-0PEDM4P MINGW64 ~/terra today/Project-03/settings/data (master)
+$ terraform plan
+data.aws_ami.ubuntu: Reading...
+data.aws_ami.ubuntu: Read complete after 1s [id=ami-0c4596ce1e7ae3e68]
+
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.
+
+How do we use this datasource ?
+1st take it out of d data dir to were all our files are (we 
+were just testing it in isolation)
+
+datasource.tf
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"]
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-20240423"]
+  }
+          
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "block-device-mapping.volume-type"
+    values = ["gp3"]
+  }
+}
+/*
+How do we reference this data sourcce.
+check d resource.tf to see how it is referenced.
+
+once y run terraform plan , it reads my data and finds
+d id of that ami (- terra will use it to provision our ec2 instance.()
+, it injects it in d ami line ie
+
+monka@DESKTOP-0PEDM4P MINGW64 ~/terra today/Project-03/settings (master)
+$ terraform plan
+data.aws_ami.ubuntu: Reading...
+data.aws_ami.ubuntu: Read complete after 0s [id=ami-0c4596ce1e7ae3e68]
+
+Terraform used the selected providers to generate the following execution plan. Resource
+actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+# aws_instance.test_ec2 will be created
+  + resource "aws_instance" "test_ec2" {
+      + ami                                  = "ami-0c4596ce1e7ae3e68"
+      + arn                                  = (known after apply)
+      + associate_public_ip_address          = (known after apply)
+      + availability_zone                    = (known after apply)
+---------------------------
+
+resource.tf
+
+resource "aws_instance" "test_ec2"  
+  ami           = data.aws_ami.ubuntu.id  ####### referencing d datasource.
+  instance_type = var.myinstancetype["dev"]
+  #user_data     = file("${path.module}/httpd.sh") this is for a redheart.
+#note above i am not supplying any variable for d instance id. it will read from default.
+#so it will go and fetch d data and inject it there as an ami
+  tags = {
+    Name = var.my_instance_name
+  }
+}
+
+#EIF cconfiguration
+
+resource "aws_eip" "my_eip" {
+  instance = aws_instance.test_ec2.id
+}
+
+U can change d region to provision ur resoruce in d var file
+this is what i had
+
+variable "myregion" {
+  type = string
+  #default = "ca-central-1"
+  default = "us-east-1"
+}
+#ami   = "ami-06f59e43b31a49ecc"  for us-east-1
+ #ami  = "ami-0a4c50a3e266777d3"   ca-central-1
+
+
+so i can dynamically provision my infrastructure without 
+going to aws to maunally get d ami
+We are using datasources to fetch info for us.
+
+to get id of a vpc, follow same process.
+
+
+Also go to documentation for reference
+eg type aws_instance on browser>select one with resource.
+it takes u to the registry.
+here u has aws_instance under resouce.
+u have d aws_ami also under data sources, click there 
+to see d basic format to follow.
+
+data "aws_ami" "example" {
+  executable_users = ["self"]
+  most_recent      = true
+  name_regex       = "^myami-\\d{3}"
+  owners           = ["self"]    #if u created d ami urself. it will look for d ami from ur acc.
+
+  filter {
+    name   = "name"
+    values = ["myami-*"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
+With this I no longer need d myami variable block in d variable.tf. i can delete it.
+bc I have a data source that will wk for any region.
+I can create a data source ofr redheart, amazon linux
+
+
+variable "myami" {
+  type    = string
+  default = "ami-0654ca17e4d49cdb4"
+}
+
+check below repo for datasources for amzonlinux redheart and ubuntu
+Terraform-master-class-series/05 - Variables and Data Sources/b) Data sources
+/1. manifests/
+
+Look at examples in 2.example-datasources in repo and practice
+There4 we use datasource to avoid hard coding and make d codes flexible.
