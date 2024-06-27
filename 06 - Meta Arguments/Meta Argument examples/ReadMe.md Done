@@ -104,9 +104,12 @@ behavior of how u wqnt d resources to be created.
 
 vpc created first, 2nd subnet 3rd instance- bcos d instance is placed in this subnet.
 
+===================================================================================
+===================================================================================
+
 COUNT
-Suppose we want to create more than 1 resources say 2 instance at once. we 
-use count.
+Suppose we want to create more than 1 resources say 2 instance at once(same configuration).
+we use count.
 create a dir called count
 copy resource.tf and data.tf into it
 count is no. of rsources u wnat to create
@@ -120,16 +123,18 @@ resource.tf
 
 #EC2Binstance configurations
 resource "aws_instance" "test_ec2" {
-  count = 3
-  ami           = data.aws_ami.ubuntu_ami.id
+  count = 3     #returns a list[]   # i want to create 3 of this
+  ami           = data.aws_ami.ubuntu_ami.id  #it is calling datasource,put data.tf in count dir
   instance_type = var.my_instance_type["dev"]
 
   tags = {
-    Name = "Demo-ec2 {$count.index}"
+    Name = "Demo-ec2 {$count.index}"   #this will differentiate the diff instances created
   }
 }
 
-variable.tf
+run terraform init where ur configuration files are found else it will tell
+u that u are initializing an emty dir.
+variable.tf #shd be in count directory
 
 variable "us_region" {
   type    = string
@@ -179,6 +184,9 @@ data "aws_ami" "ubuntu_ami" {
   }
 }
 
+
+-------
+
 Suppose u want to create 5 resources, in dev, staging, uat etc, if u want to achieve this 
 u must create variables.
 how can i read this var and return a no. bcos count is a no.
@@ -192,7 +200,7 @@ So make this changes only in resource.tf above (see under) and run d codes above
 resource.tf
 
 resource "aws_instance" "test_ec2" {
-  count         = length(var.demo_count)
+  count         = length(var.demo_count) #lenght fn returns d lenght of a list
   ami           = data.aws_ami.ubuntu_ami.id
   instance_type = var.my_instance_type["dev"]
 
@@ -209,7 +217,7 @@ variable "demo_count" {
 terraform plan u see the instance on index3 is called prod, that on index 2 is called uat
 that on index1 is called stage, and that on index0 is called dev.
 so i have used d lenth fn to find d lenth of my var.
- What id ur boss says add hr and finance to d list
+ What if ur boss says add hr and finance to d list
 i will just add them to my varibles demo_count (under), i don;t need to change my code bcos
 d length fn will automatically read this addition.
 
@@ -219,10 +227,10 @@ variable "demo_count" {
 }
 so above 5 instances will be created.
 
-Suppose we have ust our 1st 4 instance.
+Suppose we have first our 1st 4 instance.
 assume u have created d 4 resources, and d production guys have deployed resources to prod,
 d uat people have deployed to uat, staging has deployed resources, and dev has also deployed
-resources.
+resources to dev.
 
 Now suppose d boss says he does't need stage. what do u do
 simply take out stage from ur code. default = ["dev", "uat", "prod"]
@@ -232,14 +240,21 @@ plan = 2 add 1 destroy - we were expecting only to see 1 destroy.
 actually this is not what u want, bcos people of prod deployed in prod and those in uat deployed 
 to uat and not stage.
 so u don't want it like tthis. what do u do?
-THIS IS A LIMITATION OF COUNT META AGUMENT, BCOS IT RETURNS A LIST U CANNOT TAKE SOMETHING IN D MIDDLE OR 
-BEGINNING OF A LIST.
+THIS IS A LIMITATION OF COUNT META AGUMENT, BCOS IT RETURNS A LIST
+U CANNOT TAKE SOMETHING OUT FROM D MIDDLE OR BEGINNING OF A LIST. - BC ALL OF UR 
+RESOURCES WILL BE MODIFIED W IS NOT WHAT U WANT.
+IF U ARE TAKING OUT D LAST RESOURCE NO PROBLEM, IF U TAKE OUT D FIRST
+EVERYTHING WILL COLLAPSE BC IT HAS TO INDEX THEM FROM ZERO
+
 
 So terra came out with a better mega argument called for_each
+
+----------------------
 
 for_each
 for each does not wk on list, so u cannot pass a list like above.
 if u have a list u have to convert it to a set.
+Bc our var is a list, we want to pass toset fn - we are converting our list to a set.
 modify only resource.tf as below
 
 #EC2Binstance configurations
@@ -250,7 +265,7 @@ resource "aws_instance" "test_ec2" {
   instance_type = var.my_instance_type["dev"]
 
   tags = {
-    Name = each.value
+    Name = each.value         #each.value and each.key is same thing
   }
 }
 
@@ -260,9 +275,10 @@ variable "demo_count" {
 }
 
 in terraform plan you see it is putting d name of d resource and not index no as for count.
+if u take our uat, terraform plan will now show: 0 to add, 0 to change, 1 to destroy.
 it is only destroying what u deleted leaving d othrs unchanged.
 
-so for each is more reliable /flexible when u are maging ur e't.
+so for_each is more reliable /flexible when u are maging ur e't.
 in wk e't u will see many for each.
 so this is a meta argumetn it merely alters d behavior of how d resources will be 
 created, d id etc remain d same.
@@ -272,12 +288,14 @@ PROVIDER
 our providr can also be a meta argumetn. bcos we can alter how we want tis resources to be 
 created.
 we cn pass a providr block, and we can say our region is us-east-1
-then u can add another one with an alias and region as below. my default region is us-east-1
+then u can add another provider with an alias and region as below. my default region is us-east-1
 
 if i want to provision my rseource in another region, i can do as under in d resource conf.
-d resource will be created in alias region
+d resource will be created in alias region - so u ccan create a resource in diff 
+regions as under.
 
-resource "aws_instance" "test_east2" {
+doh i am wking in us east 1, 
+resource "aws_instance" "test_east2" { #this will be created in us east 2.
   provider = aws.east
   for_each = toset(var.demo_count)
   #count         = length(var.demo_count)
@@ -289,7 +307,7 @@ resource "aws_instance" "test_east2" {
   }
 }
 
-resource "aws_instance" "test_east1" {
+resource "aws_instance" "test_east1" {   #this resource will be created in my default region
   for_each = toset(var.demo_count)
   #count         = length(var.demo_count)
   ami           = data.aws_ami.ubuntu_ami.id
@@ -317,10 +335,11 @@ provider "aws" {
 
 it created 6 rsources why?  error
 prof created another data.tf in count.dir. and modify d resource.tf as under.
-he conf it as follows ie named it unbuntu_ami_1) see under 
+he conf it as follows ie named it unbuntu_ami_1) see under . so has 2 data sources
+w are d same but d names are diff.
 
 data1.tf
-data "aws_ami" "ubuntu_ami_1" {
+data "aws_ami" "ubuntu_ami_1.id" {
   most_recent = true
   owners      = ["099720109477"]
 
@@ -391,7 +410,8 @@ so w3 are altering d behavior of how d resources will be provision.
 Next meta argument lifecycle.  bl 14min
 
 LIFECYCLE
-by default when u want to say change d ami, terra will first destroy it b4 creating.
+by default when u want to say change d ami, terra will first destroy it b4 creating
+d new one.
 but when u want to change this behavior, ie for terra to create first b4 destroying 
 u use lifecle meta argument. u can pass argument like
 creat_before_destroy:
@@ -428,7 +448,7 @@ for_each
 provider
 lifecycle
 
-```
+```''''''''''''''''
 
 ## a) depends_on
 - Terraform has a feature of identifying resource dependency. This means that Terraform internally knows the sequence in which the dependent resources needs to be created whereas the independent resources are created in parallel.
