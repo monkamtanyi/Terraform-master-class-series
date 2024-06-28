@@ -3,7 +3,7 @@ to ec2. this is how u reuse resources.
 I can run my terra files when i am inside ec2 dir. this ec2 dir bcomes my wking dir.
 bcos it is my wking dir, all these files in ec2 dir makes a module. a module is terra configuration
 files within a dir. it is in this dir that i can run my terra wkflow.
-if i am running my terra commands directly inside ec2, this is what we call a root modules.
+if i am running my terra commands directly inside ec2, this is what we call a root modules..
 bcos i am running my wkflw in d dir that i am in.
 so i can consider ec2 as my module. this is my ec2 module.
 it is a module that will create an ec2 instance and a vpc- it is a module bcos it has terra
