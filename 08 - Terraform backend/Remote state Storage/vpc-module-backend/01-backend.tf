@@ -9,16 +9,17 @@ terraform {
 
 
   backend "s3" {
-    bucket         = "my-terraformstate-landmark-buc"
-    key            = "terraform/terraform.tfstate"
-    dynamodb_table = "terraform-lock"
+    bucket         = "bootcamp32-79-ken"  #s3 bucket created remote
+    key            = "vpc/terraform.tfstate"      #store d terraform.tfstate in vpc directory.
+    dynamodb_table = "terraform-lock"           #use this same terraform-lock or state log created.
 
-    region = "us-west-1"
+    region = "ca-central-1"
 
   }
 }
 
-/*resource "aws_s3_bucket" "my_bucket" {
+/*
+resource "aws_s3_bucket" "my_bucket" {
   bucket = "my-terraformstate-landmark-buc"
   acl    = "private"
 
@@ -30,7 +31,7 @@ terraform {
     Name        = "My terraform-bucket"
     Environment = "Dev"
   }
-}*/
+}
 
 resource "aws_dynamodb_table" "tf_lock" {
   name           = "terraform-lock"
@@ -45,9 +46,24 @@ resource "aws_dynamodb_table" "tf_lock" {
     Name = "Terraform Lock Table"
   }
 }
+*/
 
 # Provider Block
-provider "aws" {
-  region  = "us-west-1"
-  profile = "Kenmak"
+provider "aws" {            # it does not matter where d region is, u can still use it in another region.
+  region  =  "ca-central-1"
+ # profile = "Kenmak"
 }
+
+goto 02 generic variables.tf
+
+
+
+
+
+
+
+
+
+
+
+
