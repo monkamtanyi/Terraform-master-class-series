@@ -1,7 +1,9 @@
 # Create VPC Terraform Module
+#goto 6
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "3.11.0"
+  version = "3.11.0"   #u can update it to ur current version
   #version = "~> 2.78"
 
   # VPC Basic Details
