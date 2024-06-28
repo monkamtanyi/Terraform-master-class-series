@@ -2,7 +2,8 @@
 resource "aws_s3_bucket" "backend" {
   count = var.create_vpc ? 1 : 0
 
-  bucket = "lower(bootcamp32-${random_integer.s3.result}-${var.name}"
+  #bucket = "lower(bootcamp32-${random_integer.s3.result}-${var.name}"
+  bucket = lower("bootcamp32-${random_integer.s3.result}-${var.name}")  #correct one
 
   tags = {
     Name        = "My bucket"
