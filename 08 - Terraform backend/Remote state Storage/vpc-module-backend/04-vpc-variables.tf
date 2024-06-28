@@ -1,4 +1,4 @@
-# VPC Input Variables
+# VPC Input Variables- this is an official module, so it has many variables that can be passed in d vpc
 
 # VPC Name
 variable "vpc_name" {
