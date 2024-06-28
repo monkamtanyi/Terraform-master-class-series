@@ -29,6 +29,7 @@ http://<PUBLIC-IP>/app1/metadata.html          http://3.14.224.113/app1/metadata
 
 open port80
 
-Are we still going to do for loops as promised by prof ken? and functions
+Are we still going to do for loops as promised by prof ken? and functions and provisioners 
+
 
 Prof can u explain a child module in terraform infrastructure provisioning?  
