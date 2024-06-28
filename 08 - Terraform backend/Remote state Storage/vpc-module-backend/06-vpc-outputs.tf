@@ -1,15 +1,16 @@
 # VPC Output Values
+next goto terraform.tfvars
 
 # VPC ID
 output "vpc_id" {
   description = "The ID of the VPC"
-  value       = module.vpc.vpc_id
+  value       = module.vpc.vpc_id  #from d module.vpc, i want to get this vpc_id
 }
 
 # VPC CIDR blocks
 output "vpc_cidr_block" {
   description = "The CIDR block of the VPC"
-  value       = module.vpc.vpc_cidr_block
+  value       =  module.vp.vpc_cidr_block       getting vpc_cidr_block from d module.vp. same explanation follows under.
 }
 
 # VPC Private Subnets
