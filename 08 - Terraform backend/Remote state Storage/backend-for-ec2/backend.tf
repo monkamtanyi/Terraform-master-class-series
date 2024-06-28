@@ -48,7 +48,7 @@ u will not see a statefile in d directory.
 
 In this backend we have a vpc module. go there to continue.
 
-
+Terraform-master-class-series/08 - Terraform backend/Remote state Storage/vpc-module-backend/01-backend.tf
 
 
 
