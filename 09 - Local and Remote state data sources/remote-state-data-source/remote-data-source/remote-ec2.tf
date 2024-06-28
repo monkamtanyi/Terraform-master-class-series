@@ -31,7 +31,7 @@ data "terraform_remote_state" "network" {
   }
 }*/
 
-resource "aws_instance" "my-ec2" {
+resource "aws_instance" "my-ec2" { &&&&&
   ami           = data.aws_ami.amzlinux2.id
   instance_type = "t2.micro"
   subnet_id     = data.terraform_remote_state.network.outputs.public_subnets[1]
@@ -40,6 +40,29 @@ resource "aws_instance" "my-ec2" {
     "Name" = "My_ec2"
   }
 }
+
+Supplose u are asked to change d nameing convention of d above instance- my-ec2
+this is d name that terra knows bc it is d one in d statefile.
+do
+terraform state list
+aws_instance.my-ec2   this is d name captured in aws statefile.
+supose u want to change d neame to say dev
+if u change it here &&&&&, and u run terraform plan
+terrform is going to destroy aws_instance.my-ec2
+and will recreate a new instance aws_instance.dev.
+
+but this is not what we want, we want our instance to continue running.
+so what do we do?
+Terraform has a moved block to move resource without altering d statefile.
+
+moved { 
+  from = aws_instance.my-ec2
+  to   =   aws_instance.dev
+}
+u can move it to a module. barely say to = module ec2 name
+
+Terra best practices  BL 2min to end.
+
 
 
 
