@@ -1,27 +1,30 @@
 create a new dir ec2 and copy and paste provider.tf, resources.tf, data.tf, variables.tf from settings 
 to ec2. this is how u reuse resources.
 I can run my terra files when i am inside ec2 dir. this ec2 dir bcomes my wking dir.
-bcos it is my wking dir, all these files in ec2 make a module. a module is terra configuration
+bcos it is my wking dir, all these files in ec2 dir makes a module. a module is terra configuration
 files within a dir. it is in this dir that i can run my terra wkflow.
 if i am running my terra commands directly inside ec2, this is what we call a root modules.
-bcos i am running my wkflw in d dir that ia am in.
+bcos i am running my wkflw in d dir that i am in.
 so i can consider ec2 as my module. this is my ec2 module.
 it is a module that will create an ec2 instance and a vpc- it is a module bcos it has terra
 configuration.
-if i want to call this ec2 module, i can create a terra file- main.tf, outside of that module.
-to call this module, we use a module block- give it any name=ec2_module.
-calling d module, use keyword source. d source of d module is d path were that dir is
-in this case my module is in my present wking dir inside a dir called ec2 =./ec2
-
+if i want to call this ec2 module, i can create a terra file- main.tf, outside of that module (ec2).
+To call this module, we use a module block- give it any name=ec2_module.
+calling d module, use keyword source. d source of d module is d path to were that dir is.
+In this case my module is in my present wking dir inside a dir (folder) called ec2 =./ec2
+------------------------------------------------------------------------------
 main.tf
 module "ec2_module" {
   source = "./ec2"
 }
 
+cd .. ourt of my current directory, so that when i ls in d terraform series 
+I have main.tf
+
 monka@DESKTOP-0PEDM4P MINGW64 ~/OneDrive/Desktop/terraform-series (master)
 $ ls
 ec2/  ec2-02/  main.tf
-
+ie
 when i run my code in terraform-sereies it will be reading main.tf. bcos this is d only 
 terra file that exist in this dir.
 in this main.tf i am calling ec2, 
@@ -31,6 +34,7 @@ Initializing the backend...
 Initializing modules...
 - ec2_module in ec2
 
+terraform init does what?
 it initializses ur backend ie where d terra api is going to be stored, where d terra operations
 are going to happen. for our case we have been wking using a local bkend- where when u run
 terraform init it downloads ur api into ur local e't.
@@ -39,6 +43,8 @@ d second thing it does is it initializws ur modules, it will go and downld ur mo
 terra dir under .terraform u will see providers and modules downloaded. and inside d module dir, it has a json 
 file that reference d source dirctory of d module.
 it means terra will be reading ur code from that dir.
+
+the third it downloads your provider plugins
 
 when u run terraform plan, see how it is reading
 module.ec2_module.data.aws_ami.ubuntu_ami: Reading...
@@ -83,9 +89,10 @@ variable "sub_cdir" {
         
 }
 
-d variables confi gured can be cut to d variable.tf in vpc dir.
+d variables configured can be cut to d variable.tf in vpc dir.
 
-cp / paste provider from ec2 to main.tf
+copy / paste provider from ec2 to main.tf, bc this providr is common to ec2 and vpc.
+
 refactory d provider in ec2 ie provider.tf.md  just rename it so that it will not be read.
 d instnce in rsource.tf depends on that subnet
 this subnet id comes from a diff module - a diff vpc (create an output here and reference it in ec2).
@@ -101,7 +108,7 @@ d out put created in vpc.tf is called subnet_id, but its value is aws_subnet.mai
 and i am calling it from d rsorce as -  source = "../vpc"
 (thus if u are wking with child module, iu u want to create attribute from that module u 
 need to create an output)
-
+---------------------------------------------------------------------
 vpc.tf
 resource "aws_vpc" "my_test" {
   cidr_block = var.cidr
@@ -127,6 +134,7 @@ output "subnet_id" {
     value = aws_subnet.main.id
 }
 
+
 resource "aws_instance" "test_ec2" {
   ami           = data.aws_ami.ubuntu_ami.id
   instance_type = var.my_instance_type["dev"]
@@ -145,16 +153,17 @@ module "vpc" {
 next goto main.tf to also call this vpc module as a child module.
 see under
 
-main.tf 
+--------------------------------------------------------------------------
+1) main.tf 
 module "ec2_module" {
   source = "./ec2"
 }
 
-module "vpc" {                        // child module
-    source = "./vpc"
-}
+#module "vpc" {                        // child module
+#    source = "./vpc"
+#}
 
-terraform {
+terraform {                         #copied from ec2 into main.tf
   required_version = "~> 1.0"
   required_providers {
     aws = {
@@ -164,17 +173,31 @@ terraform {
   }
 }
 
-resource.tf in ec2
+provider "aws" {}
+
+-----------------------------------------------------
+
+2) resource.tf in ec2
 resource "aws_instance" "test_ec2" {
   ami           = data.aws_ami.ubuntu_ami.id
   instance_type = var.my_instance_type["dev"]
   subnet_id     = module.vpc.subnet_id
 
   #depends_on    = [aws_vpc.my_test]
+
   tags = {
     Name = var.my_instance_name
   }
 }
+
+module "vpc" {                        // child module
+    source = "../vpc"
+}
+
+-------------------------------------------------------------------------------------------
+
+the source of this module above  is in a dir called vpc. so the path is - go out of this 
+dir .., into a dir called vpc ie ../vpc. 
 
 do terraform initialize to downld my vpc
 
@@ -189,8 +212,9 @@ w is Name in my locals bk in variables.tf.
 so if i want to change d name of d vpc to finance, i simply go to my variable division bk and
 and change default to finance. same applies to other e't.
 
-qqqqqqqqqqqqqqqqqq
-vpc.tf in vpc dir
+------------------------------------------------------
+3) vpc.tf in vpc dir          #this vpc is a child module bc it is being called from a root module(ec2)
+
 resource "aws_vpc" "my_test" {
   cidr_block = var.cidr
   tags = {
@@ -208,10 +232,37 @@ resource "aws_subnet" "main" {
 }
 
 output "subnet_id" {
-  value = aws_subnet.main.id
+  value = aws_subnet.main.id       # it is going to return d id of above subnet
 }
-7777777
-variable.tf in vpc dir
+
+
+we need this id in resource.tf (subnet_id = module.vpc.subnet_id) 
+the id is needed to create this subnet in w will reside this
+aws_instance called test_ec2
+(what is child module? 
+i have called a module from a diff dir bc i want ot get d ouput, needed in 
+in subnet_id (found in resource.tf)
+
+so this module below w is called in resource.tf is called d child module.
+
+ module "vpc" {                        // child module
+    source = "../vpc"
+}
+
+this output found in vpc.tf will return that id (that'ts why that module is called a child module)
+output "subnet_id" {
+  value = aws_subnet.main.id 
+
+resoruce.tf, variable.tf, main.tf are are all root module, but when 
+calling d vpc module in another module it is called a child module
+Q Have u ever wked with child module?
+If u want to reference attributes from that module, u need to create an output
+and reference it
+
+----------------------------------------------------------------------
+
+4) variable.tf in vpc dir
+
 variable "cidr" {
   type    = string
   default = "10.0.0.0/16"
@@ -221,12 +272,25 @@ variable "sub_cidr" {
   type    = string
   default = "10.0.0.0/24"
 }
+--------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
+Suppose next i want to configure my vpc to reflect the appl name, d e't, and d division.
+variable.tf   modified.
+variable "cidr" {
+  type    = string
+  default = "10.0.0.0/16"
+}
 
+variable "sub_cidr" {
+  type    = string
+  default = "10.0.0.0/24"
+}
 variable "app_name" {
   type    = string
   default = "jenkins"
 }
 #name of my application is "jenkins
+
 variable "env" {
   type    = string
   default = "prod"
@@ -243,15 +307,63 @@ locals {
 */
 
   locals {
-  vpc_name = "${var.app_name}-${var.env}-${var.division}"
+  vpc_name = "${var.app_name}-${var.env}-${var.division}"  # USE THIS ONE IT IS OK
 }
-777777777
 
-this modulw that we are creating is called a custom module bcos we are creating it.
+( if i change prod to dev, then my vpc_name will change (in d locals)
+bc this vpc_name is going to be reading from d variables above ie hr, prod etc)
+ie u change d env, d vpc_name will reflect d variable that you passed in 
+d env block)
 
-Tell me what u have dome with terra
+with d var above i can create a locals block. in d locals block 
+u can define long names (u don't want to do this in ur other blocks)
+that u want to reference to, but u don't want to keep referencing 
+it these names in yr code.
+modify vpc.ft as follows
+
+3) vpc.tf in vpc dir         
+
+resource "aws_vpc" "my_test" {
+  cidr_block = var.cidr
+  tags = {
+    Name = local.vpc_name     d key is name in my locals block found in variable.tf
+  }
+}
+
+resource "aws_subnet" "main" {
+  vpc_id     = aws_vpc.my_test.id
+  cidr_block = var.sub_cidr
+
+  tags = {
+    Name = "Main"
+  }
+}
+
+output "subnet_id" {
+  value = aws_subnet.main.id       # it is going to return d id of above subnet
+}
+
+run
+terraform init
+terraform fmt  - will format dir that we are in - ie pwd
+terraform fme --recursive it will format all d terraform files within 
+the directories (ie within d main dir opened that i am wking in - here i am wking in 
+in  terra today dir w is what i oppended to start wking in this vscode today)
+
+when y do terraform plan, it will give u d names ie prod, HR and Jenkins
+this is how use ur locals block in ur local e't.
+
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+
+
+this module that we are creating is called a custom module bcos we are creating it.
+
+Tell me what u have dome with terraform:
+
 with terra i have created custom modules, whereby i am writing codes, formating it.
-i copy codes from d reg.but i customize it to meet our needs.
+I copy codes from d registry and i customize it to meet my needs.
 we push these custom modules to our repo, once we push them we now call them or make 
 reference to them.
 
@@ -262,12 +374,14 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.8.1"
 }
-i can create a dir called official_modules w a file main.tf, paste above there.
+i can create a dir called official_modules with a file main.tf, paste above there.
 
-d source is terraform official reg and version 5.8.1.
+d source is terraform official reg and official modules has a version - version 5.8.1.
+
 cd into official_modules
 terraform init    it downloads that module from d reg.
-goto official_modules, u will see d .terraform dir, when i open it i have modules
+
+goto official_modules dir, u will see d .terraform dir, when i open it i have modules
 when i open d module i see d vpc module downloaded and all other resoruces that 
 comes with d vpc.
 if u use like this y are using it as it is. scroll down to check 
@@ -295,6 +409,7 @@ look at version, and output
 if u want to use d module as it is u can use
 d one from d provision instructions one.
 if i want to customize it say i don't want internet gateway, i will do this
+ie i will look at d inputs and use this one of interest  as under
 
 main.tf in official_modules dir
 module "vpc" {
@@ -305,7 +420,22 @@ module "vpc" {
 }
 
 d official input will create internet gateway, so now i must pass above else igw will be created.
-Create official_modules dir, create a file called terraform.tfvars ain it nd put those var (*) there.
+
+u can overwrite these these variables that has been defined in our modules by
+using terraform.tfvars file
+Create official_modules dir, create a file called terraform.tfvars and in  it 
+i can pass my values ie
+
+  create_igw = false
+  create_vpc = false
+
+since it is in d official dir, these values will be automatically loaded.
+Normally create a var maybe called vpc and use this to overwrite it just as 
+we did previouly. 
+this is a way u can pass values inside a module.
+
+
+nd put those var (*) there.
 when i run d code, d .tfvars file will run automatically. i can also decide to pass this 
 (also put d above main.tf in it first) in d main.tf) .
 
@@ -313,7 +443,46 @@ so u can customize this official module by passing d variables undr usage. they 
 passed all these vars yet.
 
 check examples in landmark master class series modules and provisioners.   bl 21min video
-(d modules are called from main.tf)
+(d modules are called from main.tf
+- web.tf, u see it is calling a child module eip and sg
+it is calling sg bc i need to attach sg to my instance.
+check d name of d sg in sg.tf - i have d name of d sg here, but an output has been defined.
+this output is referencced, it is providing d security gp name.
+
+under out put it is referenced as web_traffic.name
+
+it is passed in web.tf in resource defined inside security_groups
+thus [module.sg.sg_name].  sg_name is d output
+
+can call sg as child module within d root module,
+calling db and web from d main.tf
+
+TRY TO INSTALL THIS FOLLOWING D INSTRUCTIONS
+
+Terraform Installation And Setup In AWS EC2 Redhat Instnace.
+FOUND IN 
+Terraform-master-class-series/07 - Modules and provisioners/modules/a). 
+Custom-modules/terraform-eks
+
+ALSO LOOK AT D OFFICIAL VPC- MODULE AND PRACTICE. FOUND IN
+Terraform-master-class-series/07 - Modules and provisioners/modules/b). 
+Official registry modules/1. vpc-module
+(here y can update d version of d module (registry.terraform.io/terraform-aws-modules
+/vpc/aws/latest)) click version 5.1.1(latest)>select version and click on it>
+then copy resulting module undeer provision instructions and use- it 
+is going to download that official module for u.)
+
+
+so far we have been using d local backend. we can use a remote backend -
+u create say an s3 bucket - and instead of ur terra statefile being on my 
+local e't, d statefile will reside in an s3 bucket.
+
+He will send a video on backend. and how u can read data froma a backend.
+say if we create a vpc, we want to read data from that vpc, 
+
+ie use remote state data source to read and return data to us, remember data 
+sources goes and fetch data.
+)
 
 terraform init
 terraform fmt --recursive  - will format all files in all d terraform directories.
