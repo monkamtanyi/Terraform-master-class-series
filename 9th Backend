@@ -7,7 +7,11 @@ that statefile from our local e't and save it in a s3 bucket.
 Note purpose of backend is to 
 1) initialize uour backend
 2) downloads ur modules
-3) 
+3) download provider plugin
+4) Terraform has created a lock file .terraform.lock.hcl to record the provider selections it made above
+
+
+
 Each time u change ur backend u need to run terraform init to initialize ur backend where it is going to store d ur statefile.
 
 When we are using an s3 as a backend be, terraform support locking that s3 with DynamoDB
@@ -123,11 +127,19 @@ resource "aws_dynamodb_table" "tf_lock" {
 
 PUT ALL IN A DIRECTORY CALLED backend(put 5 terraform files in this dirctory)
 
+NOTE 
+if i run d code as is, d local backend will be used for this s3 bucket bc terraform block has not been specified.
+so when d statefile is created it will be stored locally - this will be a local bucket.
 
+Bucket was created:  bootcamp32-79-ken 
+above we used a locla backen bc we have our statefle captured here locally :
+check in 
+monka@DESKTOP-0PEDM4P MINGW64 ~/terra today/backend (master)
+$ ls
+dynamoDB.tf  main.tf  output.tf  provider.tf  terraform.tfstate  variable.tf
 
-
-
-
+TO CREATE A REMOTE BACKEND USE
+Terraform-master-class-series/08 - Terraform backend/Remote state Storage/backend-for-ec2/
 
 
 
