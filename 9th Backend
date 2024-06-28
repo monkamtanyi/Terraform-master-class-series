@@ -141,7 +141,7 @@ dynamoDB.tf  main.tf  output.tf  provider.tf  terraform.tfstate  variable.tf
 TO CREATE A REMOTE BACKEND USE
 Terraform-master-class-series/08 - Terraform backend/Remote state Storage/backend-for-ec2/
 
-
+Read notes for remote s3 there.
 
 
 
