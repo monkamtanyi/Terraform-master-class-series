@@ -59,7 +59,7 @@ terraform {
 # Provider Block
 provider "aws" {
   region  = "us-west-1"
-  profile = "Kenmak"
+ # profile = "Kenmak"
 }
 
 data "terraform_remote_state" "network" {         #from this datasource, i want to look at d output from that statefile, 
@@ -71,10 +71,10 @@ data "terraform_remote_state" "network" {         #from this datasource, i want 
   }
 }
 
-/*data "terraform_remote_state" "network" {
+/*data "terraform_remote_state" "network" { *****
   backend = "local"
   config = {
-      path    = "../remote-data-source/terraform.tfstate"
+      path    = "../../backend/terraform.tfstate"
   }
 }*/
 
@@ -82,8 +82,8 @@ resource "aws_instance" "my-ec2" {            #When i read d statefile, i want t
   ami           = data.aws_ami.amzlinux2.id        #  from d vpc module just created. using d datasource above to access this subnet
   instance_type = "t2.micro"
   subnet_id     = data.terraform_remote_state.network.outputs.public_subnets[1]  #reading this data to get my subnet id to provision d instance.
-
-  tags = {
+                                                                           #i cna provision this instance in a private_subnet, bc i have an 
+  tags = {                                                                    output called private.
     "Name" = "My_ec2"
   }
 }
@@ -99,6 +99,12 @@ remote-ec2.tf
 goto remote-ec2.tf and rmove proile from provider block  bl 17.33
 this d bucket is not lpassed here, this instance my-ec2 is going to be local.
 
+
+***** if i was going to read this backend, this is how i will reference it it.
+I am interested to read d statefile in d backend dir from here.
+if i had initialize d vpc as local (creating a local statefile) then i will use this datasource, to provision this instance
+
+so these are d 2 types of data sources that we can use, one is local and the other one is remote (ie s3 w is just a state storage).
 
 
 
