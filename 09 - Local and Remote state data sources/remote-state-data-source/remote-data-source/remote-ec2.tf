@@ -16,9 +16,9 @@ provider "aws" {
 data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
-    bucket = "my-terraformstate-landmark-buc"
-    key    = "terraform/terraform.tfstate"
-    region = "us-west-1"
+    bucket = "bootcamp32-50-ken"     #name of d s3 bucket.
+    key    = "vpc/terraform.tfstate"  #i want to read d statefile inside this vpc/ that was created in d s3 bucket.
+    region = "us-west-1"            #this is where d bucket was created.Check region in variable.tf. i need to confirm.
   }
 }
 
