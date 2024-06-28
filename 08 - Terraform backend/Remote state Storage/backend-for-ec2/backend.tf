@@ -44,7 +44,9 @@ goto inside d bucket- u see d dev dir createde.
 if u click on it u have d terraform.tfstate file.
 click on it and open, it shows d statefile (w is inside d dir dev). this statefile is 4 this ec2 instance i just created.
 this bucket has been used to store my statefile.
+u will not see a statefile in d directory.
 
+In this backend we have a vpc module. go there to continue.
 
 
 
