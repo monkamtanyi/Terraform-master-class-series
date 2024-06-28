@@ -1,3 +1,8 @@
+We are using d official vpc module.
+from here goto 03 local-values
+
+
+
 # Input Variables
 # AWS Region
 variable "aws_region" {
