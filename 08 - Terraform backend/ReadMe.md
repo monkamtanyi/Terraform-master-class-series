@@ -1,4 +1,36 @@
 **Sensitive values in state**
+A local backend is backend whereby terra is storing ur statefile on ur local e't- laptop, and u are able to see d statefile.
+It happens like this when we don't pass any backend configuration. Our local backend bcomes our default backend.
+
+When we decide to configure a backend, as we initialize (terraform init) terra will ask us if we want to migrate, it will migrate
+that statefile from our local e't and save it in a s3 bucket.
+Note purpose of backend is to 
+1) initialize uour backend
+2) downloads ur modules
+3) 
+Each time u change ur backend u need to run terraform init to initialize ur backend where it is going to store d ur statefile.
+
+When we are using an s3 as a backend be, terraform support locking that s3 with DynamoDB
+so we are able to create a DynamoDB DB table and we use d DB name as a key to lock our statefile inside d s3 bucket.
+Why do we lock?
+State locking of statefile helps such that if u have 2 engrs. wking on same statefile (they are running d terra command or wkflow, )
+we don't want more than 2 engrs writting comaands at same time on d statefele - bc statefile will be corrupted. 
+Once an engr is wking on d terraform wkflow, DB locks d statefile so someone else cannot run a terraform wkflow on that statefile at
+d same time- bc we want d state file to be consistent.
+Once d terraform operation of d first engr is done, d statefile will unlock so someone else can perform d operation.
+If u are wking on a team, the terraformstatefile will have a lock so that we do not corrupt d statefile.
+
+Lets create an s3 bucket
+
+
+
+
+
+
+
+
+
+
 
 - When you run Terraform commands with a local state file, Terraform stores the state as plain text, including variable values, even if you have flagged them as sensitive. Terraform needs to store these values in your state so that it can tell if you have changed them since the last time you applied your configuration.
 - Since Terraform state can contain sensitive values, you must keep your state file secure to avoid exposing this data. Refer to the Terraform documentation to learn more about securing your state file.
