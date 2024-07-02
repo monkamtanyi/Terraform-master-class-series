@@ -6,3 +6,9 @@ we push these custom modules to our repo, once we push them we now call them or 
 reference to them.
 
 Managing and provisioning of infrastructure through code 
+It is platform agnostic - can manage a heterogeneous environment - multi cloud. u can
+use it on multiple clouds or e't or providers - aws,dk, k8s, azure etc that's why terraf. thrives.
+State management - creates a state file when a project is first initialized.
+Uses this state file to create plans and make changes based on the desired 
+and current state of the infrastructure. when u have ur configuration file, 
+terra will use to to create a state file w it uses to mge ur configuration.
