@@ -18,7 +18,7 @@ module "ec2_module" {
   source = "./ec2"
 }
 
-cd .. ourt of my current directory, so that when i ls in d terraform series 
+cd .. out of my current directory, so that when i ls in d terraform series 
 I have main.tf
 
 monka@DESKTOP-0PEDM4P MINGW64 ~/OneDrive/Desktop/terraform-series (master)
@@ -106,7 +106,7 @@ this vpc is a clild module bcs it is being called from a root module.
 (i am calling d module output (w is found in my module vpc) from d resource.tf 
 d out put created in vpc.tf is called subnet_id, but its value is aws_subnet.main.id,
 and i am calling it from d rsorce as -  source = "../vpc"
-(thus if u are wking with child module, iu u want to create attribute from that module u 
+(thus if u are wking with child module, if u want to create attribute from that module u 
 need to create an output)
 ---------------------------------------------------------------------
 vpc.tf
@@ -205,7 +205,7 @@ next suppose i want d Name of my aws_vpc to reflect an  app name, team (w team i
 hr, finance etc), d e't dev, staging prod?
 to achieve this i can create multiple variables in variables.tf (vpc dir) as below
 Aftr that i can create a locals block  - i don't want to pass this long name as a name to my vpc
-so this so this is why locals block comes in. inlocals bk u can define long names that u want 
+ so this is why locals block comes in. inlocals bk u can define long names that u want 
 to reference to but u don't want to keep referencing this name in ur code.
 after that i will goto my vpc.tf in vpc dir and say Name= local.vpc_name, - i am refering to d key
 w is Name in my locals bk in variables.tf.
