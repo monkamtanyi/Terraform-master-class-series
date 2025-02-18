@@ -16,7 +16,10 @@
   - Increase in speed of deployment
   - Reduce errors
   - Improve infrastructure consistency
-  - Eliminate configuration drift
+  - Eliminate configuration drift : occurs when the actual state of an infrastructure or application
+     environment diverges from its intended, defined, or expected state. Due to manual changes,
+    inconsistent updates, or unmanaged configurations. This can lead to security vulnerabilities,
+    system instability, and deployment failures
 
 ## **What is Terraform?**  vendor of terraform is hashicorp  (vendor of cloud infrastructure automation)    
   - IaaC tool from Hashicorp     https://www.hashicorp.com/  https://www.terraform.io/
