@@ -8,8 +8,8 @@
 
    to create an ec2 instance there are a no of ways. d first
    1) google aws_instance>takes u to  https://registry.terraform.io/providers/hashicorp/aws/3.1.0/docs/resources/instance
-   since we are using aws as our provider, d naming convention always starts with aws and underscore then d resource u are looking for eg when u want to search for an ami it will be aws_ami.
-b4 writhing this code,
+   since we are using aws as our provider, d naming convention always starts with aws and underscore then d resource u are 
+looking for eg when u want to search for an ami it will be aws_ami. b4 writhing this code,
 d first thing i need to tell terra is who is my provider.
 gotvscode and type provider ...
 
